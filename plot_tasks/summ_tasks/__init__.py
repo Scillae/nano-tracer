@@ -1,0 +1,3 @@
+from plot_tasks.summ_tasks.summ_plot_pa import summ_plot_pa
+from plot_tasks.summ_tasks.summ_plot_k2 import summ_plot_k2
+from plot_tasks.summ_tasks.summ_plot_as import summ_plot_as
