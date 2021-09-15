@@ -9,3 +9,9 @@
 /results.rar
 /summary
 /tmp
+
+/calc_tasks/__pycache__
+/models/__pycache__
+/plot_tasks/__pycache__
+/readers/__pycache__
+/utils/__pycache__

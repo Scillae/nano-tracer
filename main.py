@@ -78,5 +78,5 @@ def job_symposium_plotting(multiple_jun=False, misc = False):
 # jobs end
 
 if __name__ == '__main__':
-    job_symposium_plotting(multiple_jun=True)
+    job_symposium_plotting(multiple_jun=False)
     print('DONE')
