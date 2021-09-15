@@ -4,7 +4,8 @@ import matplotlib
 import numpy as np
 
 
-def SL(ns_func, conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, varname):
+def SL(ns_func, data, varname):
+    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list = data
     savepath = f'summary/{arm_num_list}Arms{conf_suffix}/{temp_list}C-{conc_list}M'
     su_path = f'{savepath}-{varname}.sudic' # (p_angs_dic, ns_tm, ns_last, sys)
     su_dic_results = save_load(su_path, None)
@@ -18,7 +19,8 @@ def SL(ns_func, conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, varnam
         su_dic_results = save_load(su_path, summary_dic)      
     return su_dic_results, savepath
 
-def SL_jun(ns_func, jun_list, dims_ls, conc_list, temp_list, arm_num_list, varname):
+def SL_jun(ns_func, data, conc_list, varname):
+    jun_list, dims_ls, temp_list, arm_num_list = data
     # plot: conc ~ {x: jun_nums, y: summaries, series: temperature}
     # assume saved, read corr. dics
     jun_summ_dic = {} # {jun:{(keys):(mn)}}
@@ -40,10 +42,13 @@ def SL_jun(ns_func, jun_list, dims_ls, conc_list, temp_list, arm_num_list, varna
                         summary_dic[(arm_num,conc,temp)] = (m1,std,m3_s)
             su_dic_results = save_load(su_path, summary_dic)      
         jun_summ_dic[jun] = su_dic_results
+    savepath = f'summary/{arm_num_list}Arms{jun_list}/{temp_list}C-{conc_list}M'
     return jun_summ_dic, savepath
 
-def summ_plot(summary_dic, plot_confs, conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, special_tasks=None):
+def summ_plot(summary_dic, plot_confs, data, task_list, color_list, marker_list, special_tasks=None):
     xlim, ylim_avg, ylim_std, ylim_skw, y_var = plot_confs # unpack configurations
+    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list = data
+    # plot
     fig = plt.figure(figsize=(3*len(arm_num_list),3*len(task_list)))
     gs = fig.add_gridspec(len(task_list), len(arm_num_list), hspace=0.3, wspace=0.1)
     axs = gs.subplots(sharey='row')
@@ -79,11 +84,12 @@ def summ_plot(summary_dic, plot_confs, conf_suffix, dims_ls, conc_list, temp_lis
                     axs[i, j].sharey(axs[i, 0])
     axs[0,len(arm_num_list)-1].legend()
     if special_tasks is not None:
-        axs = special_tasks(axs, conf_suffix, conc_list, temp_list, arm_num_list, task_list)
+        axs = special_tasks(axs, data, task_list)
     return plt
 
-def summ_plot_jun(jun_summ_dic, plot_confs, jun_list, dims_ls, conc, temp_list, arm_num_list, task_list, color_list, marker_list, special_tasks=None):
+def summ_plot_jun(jun_summ_dic, plot_confs, data, conc, task_list, color_list, marker_list, special_tasks=None):
     xlim, ylim_avg, ylim_std, ylim_skw, y_var = plot_confs # unpack configurations
+    jun_list, dims_ls, temp_list, arm_num_list = data
     # a figure
     fig = plt.figure(figsize=(3*len(arm_num_list),3*len(task_list)))
     gs = fig.add_gridspec(len(task_list), len(arm_num_list), hspace=0.3, wspace=0.1) # hspace=0.4, wspace=0.1
@@ -124,5 +130,5 @@ def summ_plot_jun(jun_summ_dic, plot_confs, jun_list, dims_ls, conc, temp_list, 
     axs[0,len(arm_num_list)-1].legend()
     plt.suptitle(f'{conc}M group')
     if special_tasks is not None:
-        axs = special_tasks(axs, jun_list, conc, temp_list, arm_num_list, task_list)
+        axs = special_tasks(axs, data, task_list)
     return plt

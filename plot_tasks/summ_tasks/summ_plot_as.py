@@ -13,15 +13,14 @@ def summ_plot_as(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_
     ylim_std = (0.1,0.4)
     ylim_skw = (1,2.5)
     y_var = 'Arm Stiffnesses'
-    params = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)
     #### conf ends ####
-    #### SL ####
-    summary_dic, savepath = SL(ns_as_plot ,conf_suffix, dims_ls, conc_list, temp_list, arm_num_list,varname)
-    #### SL ends ####
-    plt = summ_plot(summary_dic, params, conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
-    # special tasks
-    # special tasks ends
-    chkdir(os.path.dirname(f'{savepath}-as.png'))
-    plt.savefig(f'{savepath}-as.png',dpi=500)
+    plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)
+    data = conf_suffix, dims_ls, conc_list, temp_list, arm_num_list
+    # load data
+    summary_dic, savepath = SL(ns_as_plot, data, varname)
+    # plot
+    plt = summ_plot(summary_dic, plot_confs, data, task_list, color_list, marker_list)
+    chkdir(os.path.dirname(f'{savepath}-{varname}.png'))
+    plt.savefig(f'{savepath}-{varname}.png',dpi=500)
     plt.clf()
     return True

@@ -1,91 +1,45 @@
-from readers import Reader, NanoConstructor
-from calc_tasks import patch_angle_calc, k2_calc, x20_star, arm_stiffness_calc
-from plot_tasks.ns_plots import ns_pa_plot as ns_pa_plot
-from utils.tools import save_load, chkdir
-from collections import OrderedDict
-import matplotlib.pyplot as plt
-import matplotlib
-import numpy as np
+from utils.tools import chkdir
+from utils.summ_plot import summ_plot_jun, SL_jun
+from plot_tasks.ns_plots.ns_pa_plot import ns_pa_plot
 import os.path
+
+
+def special_tasks(axs, data, task_list):
+    jun_list, dims_ls, temp_list, arm_num_list = data
+    # 1. a horizontal dashed line at 109.5° for the 4 arm
+    axs[0,1].plot((-1,11), (109.5,109.5),c='#1AA555',ls=':')
+    # 2. one at 90° for the 6 arm patch angle plot. 
+    axs[0,3].plot((-1,11), (90,90),c='#1AA555',ls=':')
+    # 3. one at 120° for the 3 arm patch angle plot
+    axs[0,0].plot((-1,11), (120,120),c='#1AA555',ls=':')
+    # 4. a solid horizontal black line at skew=0° in the bottom row of plots.
+    for i in range(len(arm_num_list)):
+        axs[2,i].plot((-1,11), (0,0),c='#000000')
+    return axs
 
 
 def summ_plot_pa_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list):
     assert len(color_list) == len(marker_list) == len(temp_list)
-    # plot: conc ~ {x: jun_nums, y: summaries, series: temperature}
-    # assume saved, read corr. dics
-    jun_summ_dic = {} # {jun:{(keys):(mn)}}
-    for jun in jun_list:
-        if jun == 2:
-            conf_suffix = ''
-        else:
-            conf_suffix = f'-jun_{jun}'
-        savepath = f'summary/{arm_num_list}Arms{conf_suffix}/{temp_list}C-{conc_list}M'
-        su_path = f'{savepath}-pa.sudic' # (p_angs_dic, ns_tm, ns_last, sys)
-        su_dic_results = save_load(su_path, None)
-        if su_dic_results == False:
-            summary_dic = {} # {'summ':{(keys):(mn)}}
-            for arm_num in arm_num_list:
-                for conc in conc_list:
-                    for temp in temp_list:
-                        m1, std, m = ns_pa_plot(single=True, arms=arm_num, temp=temp, conc=conc, conf_suffix=conf_suffix, dims_ls= dims_ls)
-                        summary_dic[(arm_num,conc,temp)] = (m1,std,m)
-            su_dic_results = save_load(su_path, summary_dic)  
-        jun_summ_dic[jun] = su_dic_results
+    varname = 'pa'
+    #### plot confs ####
+    xlim = (-1, 11)
+    ylim_avg = (60, 130)
+    ylim_std = (0, 70)
+    ylim_skw = (-1.3, 1.3)
+    y_var = rf'Patch Angles ($^\circ$)'
+    plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)
+    #### conf ends ####
+    # packing
+    data = (jun_list, dims_ls, temp_list, arm_num_list)
+    plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)
+    # load
+    jun_summ_dic, savepath = SL_jun(ns_pa_plot, data, conc_list, varname)
     #### Plot Summaries ####
-    # reorganize: conc ~ temperature ~ (jun~summ)
+    # plot: conc ~ {x: jun_nums, y: summaries, series: temperature}
+    # data: conc ~ temperature ~ (jun~summ)
     for conc in conc_list:
-        # a figure
-        fig = plt.figure(figsize=(3*len(arm_num_list),3*len(task_list)))
-        gs = fig.add_gridspec(len(task_list), len(arm_num_list), hspace=0.3, wspace=0.1) # hspace=0.4, wspace=0.1
-        axs = gs.subplots(sharey='row')
-        for i,task in enumerate(task_list):
-            # a row
-            for j,arm_num in enumerate(arm_num_list):
-                # a cols
-                for temp,color,marker in zip(temp_list, color_list, marker_list):
-                    # a series
-                    m_ls = []
-                    for jun in jun_list:
-                        # a point
-                        m_ls.append(jun_summ_dic[jun][(arm_num,conc,temp)][i])
-                    # draw
-                    axs[i,j].scatter(jun_list, m_ls,c=color,marker=marker, label=rf'{temp} ($^\circ$C)') # s=128
-                    if i == 0:
-                        axs[i,j].set_title(rf'{arm_num} arms') # , fontsize=16
-                    axs[i,j].tick_params(bottom=True, top=True, left=True, right=True)
-                    axs[i,j].tick_params(axis="x", direction="in")
-                    axs[i,j].tick_params(axis="y", direction="in")
-                    axs[i,j].yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
-                    # integer junction numbers
-                    axs[i,j].xaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
-                    if j == 0: # first subplot of a row
-                        # set limits of axes.
-                        axs[i, j].set_xlim((-1,11))
-                        if i == 0:
-                            axs[i, j].set_ylim((60, 130))
-                        elif i == 1:
-                            axs[i, j].set_ylim((0, 70))
-                        elif i == 2:
-                            axs[i, j].set_ylim((-1.3, 1.3))
-                        axs[i, j].set_xlabel(r'Number of junction bases')
-                        axs[i, j].set_ylabel(rf'{task} of Patch Angles ($^\circ$)')
-                    else: # sync x,y axes across a row
-                        axs[i, j].sharex(axs[i, 0])
-                        axs[i, j].sharey(axs[i, 0])
-        axs[0,len(arm_num_list)-1].legend()
-        plt.suptitle(f'{conc}M group')
-        # special tasks
-        # 1. a horizontal dashed line at 109.5° for the 4 arm
-        axs[0,1].plot((-1,11), (109.5,109.5),c='#1AA555',ls=':')
-        # 2. one at 90° for the 6 arm patch angle plot. 
-        axs[0,3].plot((-1,11), (90,90),c='#1AA555',ls=':')
-        # 3. one at 120° for the 3 arm patch angle plot
-        axs[0,0].plot((-1,11), (120,120),c='#1AA555',ls=':')
-        # 4. a solid horizontal black line at skew=0° in the bottom row of plots.
-        for i in range(len(arm_num_list)):
-            axs[2,i].plot((-1,11), (0,0),c='#000000')
-        # special tasks ends
-        chkdir(os.path.dirname(f'{savepath}-pa-jun{jun_list}-{conc}M.png'))
-        plt.savefig(f'{savepath}-pa-jun{jun_list}-{conc}M.png',dpi=500)
+        plt = summ_plot_jun(jun_summ_dic, plot_confs, data, conc, task_list, color_list, marker_list, special_tasks)
+        chkdir(os.path.dirname(f'{savepath}-{varname}-jun{jun_list}-{conc}M.png'))
+        plt.savefig(f'{savepath}-{varname}-jun{jun_list}-{conc}M.png',dpi=500)
         plt.clf()
     return True
