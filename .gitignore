@@ -13,5 +13,8 @@
 /calc_tasks/__pycache__
 /models/__pycache__
 /plot_tasks/__pycache__
+/plot_tasks/ns_plots/__pycache__
+/plot_tasks/summ_tasks/__pycache__
+/plot_tasks/summ_tasks_juns/__pycache__
 /readers/__pycache__
 /utils/__pycache__
