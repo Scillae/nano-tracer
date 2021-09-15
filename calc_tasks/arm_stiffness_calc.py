@@ -3,7 +3,7 @@ import numpy as np
 # Noella: Accepted_sci
 # call this function in main.py
 # if __name__ == '__main__':
-def arm_stiffness_calc(path_top = 'data/6-arm-nanostar-starlike-412kInit.top', path_traj = 'data/6-arm-nanostar-starlike-412kInit.conf', ns_input = None, sys_input = None, arm_num = 6, dims_ls= [20,2,7], v_num = 2):
+def arm_stiffness_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_input = None, v_num = 2):
     # savepoint loading: strands-sys
     reader = Reader(path_top, path_traj)
     if type(sys_input) is str or sys_input == None:
@@ -18,6 +18,7 @@ def arm_stiffness_calc(path_top = 'data/6-arm-nanostar-starlike-412kInit.top', p
         ns_tm = nc.construct(obj=ns_input)
     # finish savepoint loading
 
+    v_num = 2
     arm_stf_vtime_dic = {} # {t_stamp: armstf_ls}
     for t_stamp, ns in ns_tm.time_capsule.items():
         arms = ns.arms

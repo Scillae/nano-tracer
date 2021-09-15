@@ -27,7 +27,7 @@ def SL_ns(calc_func, data, varname):
     var_path = f'{savepath}.{varname}tp'
     var_ls_results = save_load(var_path, None)
     if var_ls_results == False:
-        var_ls_results = calc_func(top_path, traj_path, f'{savepath}.ns', f'{savepath}.sys', arm_num=arms)
+        var_ls_results = calc_func(top_path, traj_path, arms, dims_ls, f'{savepath}.ns', f'{savepath}.sys')
         var_ls_results = save_load(var_path, var_ls_results)
     return var_ls_results, label, plotpath
 

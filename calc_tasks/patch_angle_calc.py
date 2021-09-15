@@ -3,7 +3,7 @@ import numpy as np
 # Noella: Accepted_sci
 # call this function in main.py
 # if __name__ == '__main__':
-def patch_angle_calc(path_top = 'data/6-arm-nanostar-starlike-412kInit.top', path_traj = 'data/6-arm-nanostar-starlike-412kInit.conf', ns_input = None, sys_input = None, arm_num = 6, dims_ls= [20,2,7]):
+def patch_angle_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_input = None):
     # savepoint loading: strands-sys
     reader = Reader(path_top, path_traj)
     if type(sys_input) is str or sys_input == None:

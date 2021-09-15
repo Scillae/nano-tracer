@@ -1,7 +1,7 @@
 from readers import Reader, NanoConstructor
 import numpy as np
 
-def k2_calc(path_top = 'data/6-arm-nanostar-starlike-412kInit.top', path_traj = 'data/6-arm-nanostar-starlike-412kInit.conf', sys_input = None, dims_ls = [20,2,7]):
+def k2_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_input = None):
     m = 1 # mass of a single nucleotide
     # savepoint loading: strands-sys
     reader = Reader(path_top, path_traj)
@@ -37,7 +37,7 @@ def k2_calc(path_top = 'data/6-arm-nanostar-starlike-412kInit.top', path_traj = 
                 i_arr33[2][0] += -x*z*m
                 i_arr33[1][2] += -z*y*m
                 i_arr33[2][1] += -z*y*m
-        e_vals, e_vecs = np.linalg.eig(i_arr33)
+        e_vals, _ = np.linalg.eig(i_arr33)
         l1, l2, l3 = e_vals
         k2 = 1 - (27*l1*l2*l3)/((l1+l2+l3)**3)
         k2_ls.append((t_stamp, k2))
