@@ -23,7 +23,7 @@ def SL_ns(calc_func, data, varname):
     top_path = f'../../ox-sync/simul-inputs-{arms}arms{conf_suffix}/{arms}arm-rods-clustered{conf_suffix}.top'
     traj_path = f'../../ox-sync/simul-inputs-{arms}arms{conf_suffix}/{loose_lbl}/trajectory.dat'
     savepath = f'data/composed_traj/{arms}arms{conf_suffix}/{loose_lbl}/{label}'
-    plotpath = f'results/{arms}arms{conf_suffix}/{varname}_hist-{label}.png'
+    plotpath = f'results/{arms}arms{conf_suffix}/{varname}/{varname}_hist-{label}.png'
     var_path = f'{savepath}.{varname}tp'
     var_ls_results = save_load(var_path, None)
     if var_ls_results == False:
@@ -36,7 +36,7 @@ def ns_plot(data_process_func, results, plot_confs, data, varname):
     varname, x_var, x_lim, y_lim, text_pos, bin_num = plot_confs
     var_ls_results, label, plotpath = results
 
-    var_ls = data_process_func(var_ls_results)
+    var_ls = data_process_func(var_ls_results, data)
 
     n,bin_edges = np.histogram(var_ls,bins = bin_num, range = x_lim)
     bin_centers = 0.5*(bin_edges[1:] + bin_edges[:-1])

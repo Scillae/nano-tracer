@@ -52,7 +52,8 @@ def formatter(type_list, s):
 
 def save_load(p, obj):
     print(f'TM path: {p}')
-    chkdir(os.path.dirname(p)) # os.path.split(p)[0]
+    if p != None:
+        chkdir(os.path.dirname(p)) # os.path.split(p)[0]
     if p is None:
         print('TM skipping!')
         return obj

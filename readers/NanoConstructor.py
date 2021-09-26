@@ -1,5 +1,6 @@
 from models import Strand, Base, NanoStar, NanoMesh, Arm, TimeMachine
 from collections import OrderedDict
+from utils.tools import save_load as SL
 import numpy as np
 import copy
 import pickle
@@ -12,27 +13,8 @@ class NanoConstructor:
         self.strands = strands_tm
         self.arm_num = arm_num # nanomesh not using this.
     
-    def save_load(self, p, obj):
-        print(f'TM path: {p}')
-        if p is None:
-            print('TM skipping!')
-            return obj
-        if (obj is not None) and (not os.path.isfile(p)):
-            if os.path.isdir(os.path.split(p)[0]) == False:
-                os.makedirs(os.path.split(p)[0])
-            print('TM saving!')
-            pickle.dump(obj, open(p,"wb"))
-            r_obj = obj
-        elif (obj is None) and os.path.isfile(p):
-            print('TM loading!')
-            r_obj = pickle.load(open(p, "rb"))
-        elif (obj is not None) and os.path.isfile(p):
-            print('TM updating savepoint!')
-            pickle.dump(obj, open(p,"wb"))
-            r_obj = obj
-        else:
-            print('TM save_load both empty')
-            r_obj = False
+    def save_load(self, p, obj = None):
+        r_obj = SL(p, obj)
         return r_obj
 
     def construct(self, p = None, obj = None):

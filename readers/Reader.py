@@ -3,6 +3,7 @@ import pickle
 import os.path
 from models import Strand, Base, TimeMachine
 from utils import assignment_parser
+from utils.tools import save_load as SL
 from utils.tools import nextline, formatter
 from collections import OrderedDict
 
@@ -91,26 +92,7 @@ class Reader:
         return base_incre
 
     def save_load(self, p, obj = None):
-        print(f'TM path: {p}')
-        if p is None:
-            print('TM skipping!')
-            return obj
-        if (obj is not None) and (not os.path.isfile(p)):
-            if os.path.isdir(os.path.split(p)[0]) == False:
-                os.makedirs(os.path.split(p)[0])
-            print('TM saving!')
-            pickle.dump(obj, open(p,"wb"))
-            r_obj = obj
-        elif (obj is None) and os.path.isfile(p):
-            print('TM loading!')
-            r_obj = pickle.load(open(p, "rb"))
-        elif (obj is not None) and os.path.isfile(p):
-            print('TM updating savepoint!')
-            pickle.dump(obj, open(p,"wb"))
-            r_obj = obj
-        else:
-            print('TM save_load both empty')
-            r_obj = False
+        r_obj = SL(p, obj)
         return r_obj
 
     def read_data(self, p = None, obj = None):

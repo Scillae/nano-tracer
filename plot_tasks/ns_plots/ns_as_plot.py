@@ -2,7 +2,7 @@ from calc_tasks import arm_stiffness_calc
 from utils.ns_plot import SL_ns, ns_plot
 
 
-def data_process_func(as_results):
+def data_process_func(as_results, data):
     as_dic, arms_idx = as_results
     from collections import OrderedDict
     stf_dic = OrderedDict() # {arm_id:{t:armstf}}
