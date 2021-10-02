@@ -3,3 +3,5 @@ from plot_tasks.summ_tasks_juns.summ_plot_k2_jun import summ_plot_k2_jun
 from plot_tasks.summ_tasks_juns.summ_plot_as_jun import summ_plot_as_jun
 from plot_tasks.summ_tasks_juns.summ_plot_pj_jun import summ_plot_pj_jun
 from plot_tasks.summ_tasks_juns.summ_plot_kj_jun import summ_plot_kj_jun
+from plot_tasks.summ_tasks_juns.summ_plot_rj_jun import summ_plot_rj_jun
+from plot_tasks.summ_tasks_juns.summ_plot_js_jun import summ_plot_js_jun

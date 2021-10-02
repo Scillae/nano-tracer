@@ -14,6 +14,7 @@ class NanoStar:
         # strands_dic = OrderedDict()
         # sanity check of strand amount
         assert len(strands_dic) == arm_num
+        strands = copy.deepcopy(strands_dic) # avoid modification to the ref var.
         '''
         for strand_id, strand in strands_dic.items():
             # Noella: Accepted_sci
@@ -23,9 +24,9 @@ class NanoStar:
             base_seq_r_ls.reverse()
             strands_dic[strand_id] = Strand(strand_id, base_seq_r_ls)
         '''
-        self.center = self.center_gen(strands_dic, dims_ls)
-        self.arms = self.binding(strands_dic, dims_ls)
         self.strands = strands_dic
+        self.center = self.center_gen(strands, dims_ls)
+        self.arms = self.binding(strands, dims_ls)
 
     def center_gen(self, strands_dic, dims_ls):
         len_arm, len_cen, len_end = dims_ls

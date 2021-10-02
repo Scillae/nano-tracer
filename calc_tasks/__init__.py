@@ -4,3 +4,5 @@ from calc_tasks.x20_star import x20_star
 from calc_tasks.arm_stiffness_calc import arm_stiffness_calc
 from calc_tasks.patch_jun_calc import patch_jun_calc
 from calc_tasks.k2_jun_calc import k2_jun_calc
+from calc_tasks.r2_jun_calc import r2_jun_calc
+from calc_tasks.jun_shift_calc import jun_shift_calc

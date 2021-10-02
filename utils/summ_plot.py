@@ -30,6 +30,7 @@ def SL_jun(ns_func, data, conc_list, varname):
             conf_suffix = ''
         else:
             conf_suffix = f'-jun_{jun}'
+            dims_ls[1] = jun
         savepath = f'summary/{arm_num_list}Arms{conf_suffix}/{temp_list}C-{conc_list}M'
         su_path = f'{savepath}-{varname}.sudic' # (p_angs_dic, ns_tm, ns_last, sys)
         su_dic_results = save_load(su_path, None)
