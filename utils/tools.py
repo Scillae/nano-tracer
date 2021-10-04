@@ -78,3 +78,13 @@ def chkdir(d):
         os.makedirs(d)
         print(f'Created Directory: {d}')
     return
+
+def dims_adjust(dims_ls, conf_suffix, single=True, sp_suffix=''):
+    dims_ls = [20,2,7]
+    if conf_suffix.split('_')[0] == '':
+        return
+    if conf_suffix.split('_')[0] == '-jun':
+        dims_ls[1] = int(conf_suffix.split('_')[1])
+    else:
+        assert 0 == 1
+    return

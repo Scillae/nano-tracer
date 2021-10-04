@@ -37,7 +37,9 @@ def ns_plot(data_process_func, results, plot_confs, data, varname):
     var_ls_results, label, plotpath = results
 
     var_ls = data_process_func(var_ls_results, data)
-
+    if min(var_ls) < x_lim[0] or max(var_ls) > x_lim[1]:
+        print(f'ns_plot out of range: {min(var_ls)} < {x_lim[0]} : {min(var_ls) < x_lim[0]} or {max(var_ls)} > {x_lim} : {max(var_ls) > x_lim[1]}')
+        # assert 0 == 1
     n,bin_edges = np.histogram(var_ls,bins = bin_num, range = x_lim)
     bin_centers = 0.5*(bin_edges[1:] + bin_edges[:-1])
 

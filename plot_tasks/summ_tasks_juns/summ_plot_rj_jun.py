@@ -16,10 +16,10 @@ def summ_plot_rj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task
     varname = 'rj'
     #### plot confs ####
     xlim = (-1, 11)
-    ylim_avg = (6, 12)
-    ylim_std = (0, 1)
+    ylim_avg = (4, 12)
+    ylim_std = (0.1, 0.6)
     ylim_skw = (-1, 0.5)
-    y_var = 'r2 of the Junction'
+    y_var = 'RoG of the Junction'
     plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)
     #### conf ends ####
     # packing

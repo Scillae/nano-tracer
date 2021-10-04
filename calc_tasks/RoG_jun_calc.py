@@ -1,7 +1,7 @@
 from readers import Reader, NanoConstructor
 import numpy as np
 
-def r2_jun_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_input = None):
+def RoG_jun_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_input = None):
     m = 1 # mass of a single nucleotide
     # savepoint loading: strands-sys
     reader = Reader(path_top, path_traj)
@@ -18,10 +18,10 @@ def r2_jun_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_inpu
     # finish savepoint loading
 
 
-    r2_ls = []  # [(t_stamp, k2_val)]
+    RoG_ls = []  # [(t_stamp, k2_val)]
     # for t_stamp, ns in ns_tm.time_capsule.items():
     for t_stamp, ns in ns_tm.time_capsule.items():
-        r2 = 0
+        RoG = 0
         CoM_pos = np.zeros(3)
         base_cnt = 0
         center_ls = list(ns.center.values()) # center_ls: [center_base], len == 4*arm_num
@@ -34,7 +34,7 @@ def r2_jun_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_inpu
         CoM_pos = np.divide(CoM_pos, base_cnt)
         for base in center_ls:
             v = base.position - CoM_pos
-            r2 += np.dot(v,v)
-        r2 = np.sqrt(r2/base_cnt)
-        r2_ls.append((t_stamp, r2))
-    return r2_ls
+            RoG += np.dot(v,v)
+        RoG = np.sqrt(RoG/base_cnt)
+        RoG_ls.append((t_stamp, RoG))
+    return RoG_ls

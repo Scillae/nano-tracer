@@ -25,6 +25,7 @@ class Arm:
         del strands[leading_strid]
         # Noella: Questioned_sci(dic or list) - dict
         s1 = list(list(strands.values())[0].base_sequence.values())
+        s1.reverse() # reverse s1 so that the single_end is at the start.
         # s1 = list(list(strands.values())[0].base_sequence)
 
         pair_tp_dic = OrderedDict()

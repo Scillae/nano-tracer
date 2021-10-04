@@ -1,5 +1,6 @@
 from calc_tasks import patch_angle_calc
 from utils.ns_plot import SL_ns, ns_plot
+from utils.tools import dims_adjust
 
 
 def data_process_func(p_ang_ls_res, data): # should be trimmed.
@@ -47,8 +48,8 @@ def data_process_func(p_ang_ls_res, data): # should be trimmed.
 
 
 def ns_pa_plot(single=True, arms=4, temp=30, conc=0.5, sp_suffix='', conf_suffix='', dims_ls= [20,2,7]):
-   
     varname = 'pa'
+    dims_adjust(dims_ls, conf_suffix, single, sp_suffix)
     data = (arms, temp, conc, sp_suffix, conf_suffix, dims_ls)
     results = SL_ns(patch_angle_calc, data, varname)
     #### plot confs ####

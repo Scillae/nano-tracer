@@ -1,5 +1,6 @@
 /.idea
 /code_savepoint
+/data1
 /data
 /dna4.rar
 /mian.py
@@ -8,6 +9,7 @@
 /results
 /results.rar
 /summary
+/summary1
 /tmp
 
 /calc_tasks/__pycache__

@@ -20,7 +20,7 @@ def summ_plot_rj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_
     ylim_avg = (6, 12)
     ylim_std = (0, 1)
     ylim_skw = (-1, 0.5)
-    y_var = 'r2 of the Junction'
+    y_var = 'RoG of the Junction'
     #### conf ends ####
     plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)
     data = conf_suffix, dims_ls, conc_list, temp_list, arm_num_list

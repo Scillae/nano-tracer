@@ -1,5 +1,6 @@
 from calc_tasks import k2_jun_calc
 from utils.ns_plot import SL_ns, ns_plot
+from utils.tools import dims_adjust
 
 
 def data_process_func(k2_ls_res, data):
@@ -10,6 +11,7 @@ def data_process_func(k2_ls_res, data):
 
 def ns_kj_plot(single=True, arms=4, temp=30, conc=0.5, sp_suffix='', conf_suffix='', dims_ls= [20,2,7]):
     varname = 'kj'
+    dims_adjust(dims_ls, conf_suffix, single, sp_suffix)
     data = (arms, temp, conc, sp_suffix, conf_suffix, dims_ls)
     results = SL_ns(k2_jun_calc, data, varname) # results: var_ls_results, label, plotpath
     #### plot confs ####
