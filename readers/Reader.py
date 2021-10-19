@@ -112,6 +112,7 @@ class Reader:
                         base_seq_r_ls.reverse()
                         od = OrderedDict(base_seq_r_ls)
                         strands_r[strand_id] = Strand(strand_id, od)
+                    self.strands = strands_r
                     self.time_machine.add_strands(self.timestamp, self.strands)
                     self.strands = {}
                 else:

@@ -17,7 +17,7 @@ def summ_plot_js(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_
     varname = 'js'
     #### plot confs ####    
     xlim = (15,55)
-    ylim_avg = (0.2, 0.5)
+    ylim_avg = (0.1, 0.4)
     ylim_std = (0, 0.3)
     ylim_skw = (0.4, 2.0)
     y_var = 'Junction Shift (nm)'

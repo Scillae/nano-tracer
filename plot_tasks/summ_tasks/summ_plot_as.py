@@ -9,9 +9,9 @@ def summ_plot_as(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_
     varname = 'as'
     #### plot confs ####    
     xlim = (15,55)
-    ylim_avg = (0.1,0.4)
-    ylim_std = (0.1,0.4)
-    ylim_skw = (1,2.5)
+    ylim_avg = (0,0.4)
+    ylim_std = (0,0.4)
+    ylim_skw = (-1,2.5)
     y_var = 'Arm Stiffnesses'
     #### conf ends ####
     plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)

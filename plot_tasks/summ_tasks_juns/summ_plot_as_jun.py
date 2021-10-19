@@ -9,8 +9,8 @@ def summ_plot_as_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task
     varname = 'as'
     #### plot confs ####
     xlim = (-1, 11)
-    ylim_avg = (0.15, 0.5)
-    ylim_std = (0.1, 0.3)
+    ylim_avg = (0., 0.5)
+    ylim_std = (0, 0.3)
     ylim_skw = (1, 2.5)
     y_var = 'Arm Stiffnesses'
     #### conf ends ####

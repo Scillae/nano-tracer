@@ -16,7 +16,7 @@ def ns_rj_plot(single=True, arms=4, temp=30, conc=0.5, sp_suffix='', conf_suffix
     results = SL_ns(RoG_jun_calc, data, varname) # results: var_ls_results, label, plotpath
     #### plot confs ####
     x_var = 'R of Gyr of the Junction (nm)'
-    x_lim = (3,12)
+    x_lim = (0,4.5)
     y_lim = (0,0.3)
     bin_num = 50
     text_pos = (0.7*(x_lim[1]-x_lim[0])+x_lim[0], (0.215/0.3)*(y_lim[1]-y_lim[0]))
