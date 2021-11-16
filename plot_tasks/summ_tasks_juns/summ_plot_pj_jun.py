@@ -23,8 +23,8 @@ def summ_plot_pj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task
     varname = 'pj'
     #### plot confs ####
     xlim = (-1, 11)
-    ylim_avg = (60, 130)
-    ylim_std = (0, 70)
+    ylim_avg = (60, 150)
+    ylim_std = (0, 90)
     ylim_skw = (-1.3, 1.3)
     y_var = rf'Patch Angles of Junction ($^\circ$)'
     plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)

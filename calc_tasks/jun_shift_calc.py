@@ -29,7 +29,7 @@ def jun_shift_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_i
             center_ls = []
         else:
             center_ls = list(ns.center.values()) # center_ls: [center_base], len == 4*arm_num
-        center_ls.extend([base for arm in ns.arms.values() for base in list(arm.base_pairs.values())[0]])
+        center_ls.extend([base for arm in ns.arms.values() for base in list(arm.base_pairs.values())[-1]])
         # CoM
         for base in center_ls:
             CoM_cen_pos = np.add(CoM_cen_pos, np.array(base.position))

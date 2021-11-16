@@ -17,7 +17,7 @@ def report_plot_k2(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, col
     varname = 'k2'
     #### plot confs ####    
     xlim = (2.5,6.5)
-    ylim_avg = (0, 0.4)
+    ylim_avg = (0, 0.8)
     ylim_std = (0, 0.3)
     ylim_skw = (0.4, 2.0)
     y_var = 'k2 values'

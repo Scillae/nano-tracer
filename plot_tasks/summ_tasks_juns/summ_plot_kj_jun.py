@@ -16,8 +16,8 @@ def summ_plot_kj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task
     varname = 'kj'
     #### plot confs ####
     xlim = (-1, 11)
-    ylim_avg = (0, 0.4)
-    ylim_std = (0, 0.4)
+    ylim_avg = (0, 0.7)
+    ylim_std = (0, 0.7)
     ylim_skw = (0.4, 2.0)
     y_var = 'k2 of Junction'
     plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)

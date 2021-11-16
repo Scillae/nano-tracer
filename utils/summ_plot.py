@@ -113,7 +113,7 @@ def summ_plot_jun(jun_summ_dic, plot_confs, data, conc, task_list, color_list, m
                 axs[i,j].tick_params(axis="x", direction="in")
                 axs[i,j].tick_params(axis="y", direction="in")
                 axs[i,j].yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
-                axs[i,j].xaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
+                axs[i,j].xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(base=2)) # TODO
                 if j == 0: # first subplot of a row
                     # set limits of axes.
                     axs[i, j].set_xlim(xlim)

@@ -5,3 +5,5 @@ from plot_tasks.summ_tasks_juns.summ_plot_pj_jun import summ_plot_pj_jun
 from plot_tasks.summ_tasks_juns.summ_plot_kj_jun import summ_plot_kj_jun
 from plot_tasks.summ_tasks_juns.summ_plot_rj_jun import summ_plot_rj_jun
 from plot_tasks.summ_tasks_juns.summ_plot_js_jun import summ_plot_js_jun
+from plot_tasks.summ_tasks_juns.summ_plot_pan_jun import summ_plot_pan_jun
+from plot_tasks.summ_tasks_juns.summ_plot_pjn_jun import summ_plot_pjn_jun

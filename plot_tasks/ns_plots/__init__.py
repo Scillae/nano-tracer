@@ -5,3 +5,5 @@ from plot_tasks.ns_plots.ns_pj_plot import ns_pj_plot
 from plot_tasks.ns_plots.ns_kj_plot import ns_kj_plot
 from plot_tasks.ns_plots.ns_rj_plot import ns_rj_plot
 from plot_tasks.ns_plots.ns_js_plot import ns_js_plot
+from plot_tasks.ns_plots.ns_pan_plot import ns_pan_plot
+from plot_tasks.ns_plots.ns_pjn_plot import ns_pjn_plot

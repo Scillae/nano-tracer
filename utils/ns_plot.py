@@ -24,7 +24,10 @@ def SL_ns(calc_func, data, varname):
     traj_path = f'../../ox-sync/simul-inputs-{arms}arms{conf_suffix}/{loose_lbl}/trajectory.dat'
     savepath = f'data/composed_traj/{arms}arms{conf_suffix}/{loose_lbl}/{label}'
     plotpath = f'results/{arms}arms{conf_suffix}/{varname}/{varname}_hist-{label}.png'
-    var_path = f'{savepath}.{varname}tp'
+    if varname == 'sys' or varname == 'ns':
+        var_path = f'{savepath}.{varname}'
+    else:
+        var_path = f'{savepath}.{varname}tp'
     var_ls_results = save_load(var_path, None)
     if var_ls_results == False:
         var_ls_results = calc_func(top_path, traj_path, arms, dims_ls, f'{savepath}.ns', f'{savepath}.sys')

@@ -17,7 +17,7 @@ def summ_plot_rj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_
     varname = 'rj'
     #### plot confs ####    
     xlim = (15,55)
-    ylim_avg = (0, 4)
+    ylim_avg = (0, 5)
     ylim_std = (0, 1)
     ylim_skw = (-1, 0.5)
     y_var = 'R of Gyr of the Junction (nm)'
