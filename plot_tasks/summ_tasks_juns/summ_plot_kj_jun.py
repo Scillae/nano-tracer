@@ -12,6 +12,11 @@ def special_tasks(axs, data, task_list):
     return axs
 
 def summ_plot_kj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list):
+    '''
+    Summary plot (#unpaired at junction varied) of k2 of the junction.
+    Set varname and plot confs.
+    Define special tasks to customize the plot.
+    '''
     assert len(color_list) == len(marker_list) == len(temp_list)
     varname = 'kj'
     #### plot confs ####

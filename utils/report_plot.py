@@ -9,11 +9,17 @@ def gaussian(x, amplitude, mean, stddev):
     return amplitude * np.exp(-((x - mean) / 4 / stddev)**2)
 
 def data_process_func_js(js_ls_res, data):
+    '''
+    Transforming simulation units into Angstroms.
+    '''
     # arms, temp, conc, sp_suffix, conf_suffix, dims_ls = data
     js_ls = [i[1]*10*0.8518 for i in js_ls_res]
     return js_ls
 
 def SL(ns_func, data, varname):
+    '''
+    Save&Load for fixed design. Same as in the summary plot.
+    '''
     conf_suffix, dims_ls, conc_list, temp_list, arm_num_list = data
     savepath = f'summary/{arm_num_list}Arms{conf_suffix}/{temp_list}C-{conc_list}M'
     su_path = f'{savepath}-{varname}.sudic' # (p_angs_dic, ns_tm, ns_last, sys)
@@ -29,6 +35,9 @@ def SL(ns_func, data, varname):
     return su_dic_results, savepath
 
 def SL_jun(ns_func, data, conc_list, varname):
+    '''
+    Save&Load for varied designs. Same as in the summary plot.
+    '''
     jun_list, dims_ls, temp_list, arm_num_list = data
     # plot: conc ~ {x: jun_nums, y: summaries, series: temperature}
     # assume saved, read corr. dics
@@ -56,16 +65,21 @@ def SL_jun(ns_func, data, conc_list, varname):
     return jun_summ_dic, savepath
 
 def pa_3d_report_plot(data):
+    '''
+    Draw the 3D dot cloud of arms, using pyplot 3D projection.
+    :data: descriptions of nanostar and desired conditions
+    '''
     z_arm_id = 0
-    x_lim = (-10,10)
-    y_lim = (-10,10)
-    z_lim = (-10,10)
+    arm_normalize = True
+    x_lim = (-1.2,1.2)
+    y_lim = (-1.2,1.2)
+    z_lim = (-1.2,1.2)
     from utils.ns_plot import SL_ns
-    from calc_tasks.k2_calc import k2_calc
     conf_suffix, dims_ls, conc_list, temp_list, arm_num_list = data
-    color_list = ['#4994FF','#E55050','#FCC555','#7AA77A']
+    color_list = ['#4994FF','#E55050','#FCC555','#7AA77A'] # blue, red, yellow, green
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d', xlim=x_lim, ylim=y_lim, zlim=z_lim)
+    ax.dist = 5
     for j, conc in enumerate(conc_list):
         for i, temp in enumerate(temp_list):
             k2_arr_ls = []
@@ -74,14 +88,12 @@ def pa_3d_report_plot(data):
                 data = (arm_num, temp, conc, '', conf_suffix, dims_ls)
                 ns_tm, label, plotpath = SL_ns(None, data, 'ns')
                 vec_dic = {} # {t:[(ia,(x,y,z),(shareia,shareia2))]}
+                vec_jun_dic = {}
                 for t_stamp, ns in ns_tm.time_capsule.items():
                     # print(t_stamp)
-                    vec_dic[t_stamp] = nanostar_vectorize(ns,z_arm_id)
+                    vec_dic[t_stamp], vec_jun_dic[t_stamp] = nanostar_vectorize(ns, dims_ls ,z_arm_id, arm_normalize)
                 # prepare for plotting
                 arms_seq_dic = {} # {ia:{seq_i}}
-                seq_x = []
-                seq_y = []
-                seq_z = []
                 for t_stamp, vec_arms_ls in vec_dic.items():
                     for (ia,(x,y,z),(shareia,shareia2), is_sharing_sel) in vec_arms_ls:
                         if ia not in arms_seq_dic.keys():
@@ -96,78 +108,183 @@ def pa_3d_report_plot(data):
                     #     ax.scatter(x,y,z)
                     #     print(f"Arm:{ia}, coord:({x:.5f},{y:.5f},{z:.5f})")
                     # plt.show()
+                jun_seq_dic = {} # {ia:{seq_i}}
+                for t_stamp, vec_arms_ls in vec_jun_dic.items():
+                    for (ia,(x,y,z),(shareia,shareia2), is_sharing_sel) in vec_arms_ls:
+                        if ia not in jun_seq_dic.keys():
+                            jun_seq_dic[ia] = {}
+                            jun_seq_dic[ia]['x'] = []
+                            jun_seq_dic[ia]['y'] = []
+                            jun_seq_dic[ia]['z'] = []
+                        jun_seq_dic[ia]['x'].append(x)
+                        jun_seq_dic[ia]['y'].append(y)
+                        jun_seq_dic[ia]['z'].append(z)
+                        jun_seq_dic[ia]['is_sharing_sel'] = is_sharing_sel
+                
                 # additional data processing goes here
+                # arms
                 for ia, seq_dic in arms_seq_dic.items():
+                    # draw points
                     if ia == z_arm_id:
-                        ax.scatter(seq_dic['x'],seq_dic['y'],seq_dic['z'],c=color_list[0], s=5)
+                        ax.scatter(seq_dic['x'],seq_dic['y'],seq_dic['z'],c=color_list[0], s=3)
                     else:
                         if seq_dic['is_sharing_sel'] == 1:
-                            ax.scatter(seq_dic['x'],seq_dic['y'],seq_dic['z'],c=color_list[1], s=5)
+                            ax.scatter(seq_dic['x'],seq_dic['y'],seq_dic['z'],c=color_list[1], s=3)
                             assert 1==1
                         elif seq_dic['is_sharing_sel'] == 2:
-                            ax.scatter(seq_dic['x'],seq_dic['y'],seq_dic['z'],c=color_list[2], s=5)
+                            ax.scatter(seq_dic['x'],seq_dic['y'],seq_dic['z'],c=color_list[2], s=3)
                             assert 1==1
                         elif seq_dic['is_sharing_sel'] == False:
-                            ax.scatter(seq_dic['x'],seq_dic['y'],seq_dic['z'],c=color_list[3], s=5)
+                            ax.scatter(seq_dic['x'],seq_dic['y'],seq_dic['z'],c=color_list[3], s=3)
+                            assert 1==1
+                        else:
+                            assert 0==1
+                        # draw a circle that enclose p% points
+                        x_arr = np.array(seq_dic['x'])
+                        y_arr = np.array(seq_dic['y'])
+                        z_arr = np.array(seq_dic['z'])
+                        center, cir_traj = circle_enclosing_points(x_arr,y_arr,z_arr, p = 68)
+                        ax.scatter(center[0],center[1],center[2], c='#000000', s=40)
+                        ax.plot(cir_traj[0,:],cir_traj[1,:],cir_traj[2,:], c='#000000')
+                        ax.plot([0,center[0]],[0,center[1]],[0,center[2]], c='#000000')
+                # junction
+                for ia, seq_dic in jun_seq_dic.items():
+                    if ia == z_arm_id:
+                        ax.scatter(seq_dic['x'],seq_dic['y'],seq_dic['z'],c=color_list[0], s=3)
+                    else:
+                        if seq_dic['is_sharing_sel'] == 1:
+                            ax.scatter(seq_dic['x'],seq_dic['y'],seq_dic['z'],c=color_list[1], s=3)
+                            assert 1==1
+                        elif seq_dic['is_sharing_sel'] == 2:
+                            ax.scatter(seq_dic['x'],seq_dic['y'],seq_dic['z'],c=color_list[2], s=3)
+                            assert 1==1
+                        elif seq_dic['is_sharing_sel'] == False:
+                            ax.scatter(seq_dic['x'],seq_dic['y'],seq_dic['z'],c=color_list[3], s=3)
                             assert 1==1
                         else:
                             assert 0==1
     plt.show()
-    return plt
+    return plt,fig
+
+def circle_enclosing_points(x, y, z, p = 68):
+    # x,y,z are all np.array, enclose p% points
+    xyz = np.vstack((x,y,z))
+    xyzrtp = append_spherical_np(xyz)
+    # center of circle
+    r0 = np.median(xyzrtp[3,:]) # should be 1 though
+    t0 = np.median(xyzrtp[4,:])
+    p0 = np.median(xyzrtp[5,:])
+    center = convert_spherical_to_rectangular(r0,t0,p0)
+    x0, y0, z0 = center
+    d = np.sqrt((x - x0)**2 + (y - y0)**2 + (z - z0)**2)
+    # radius of circle, parameters for the circle. r_cir and center are on sphere; r_draw and c_draw are for drawing.
+    r_cir = np.percentile(d, p, interpolation = 'nearest') # how to find its projection to a plane?
+    p_cir = 2*np.arcsin(r_cir/2) # arc length
+    alpha =  (np.pi-p_cir/(r0))/2 # angle between the r_cir cord and the circle plane
+    r_draw = np.sin(alpha) * r_cir # radius of true circle
+    c_len = np.sqrt(np.dot(center,center))
+    c_unit = center / c_len
+    c_draw = (c_len - np.cos(alpha) * r_cir)*c_unit # center of true circle
+    # below is discarded since: center_cir == center
+    # center_cir = np.array((np.sqrt(r0**2-r_cir**2)*np.sin(t0)*np.cos(p0), np.sqrt(r0**2-r_cir**2)*np.sin(t0)*np.sin(p0),np.sqrt(r0**2-r_cir**2)*np.cos(t0))) # wrong
+    r_vec = np.cross(c_unit,c_unit+1)
+    r_unit = r_vec / np.sqrt(np.dot(r_vec,r_vec))
+    # auxiliary vector: generate a circle with r_unit. r_unit ortho to a_vec ortho to c_unit. a_vec should be unit.
+    a_vec = np.cross(r_unit, c_unit)
+    traj_param = np.linspace(0, 2*np.pi, 200)
+    aux_param = np.cos(traj_param)
+    traj_param = np.sin(traj_param)
+    traj_param = np.vstack((traj_param,traj_param,traj_param))  # 200 columns, 3 rows. column (item) assign: traj_xyz[:,col_idx]; column assign: traj_xyz[var_idx,:]
+    aux_param = np.vstack((aux_param,aux_param,aux_param))
+    traj_xyz = traj_param * r_draw * r_unit.reshape((3,1)) + aux_param * r_draw * a_vec.reshape((3,1))
+    traj_xyz = traj_xyz + c_draw.reshape((3,1))
+    return center, traj_xyz
+
+def convert_spherical_to_rectangular(r,t,p):
+    x = r*np.sin(t)*np.cos(p)
+    y = r*np.sin(t)*np.sin(p)
+    z = r*np.cos(t)
+    return np.array((x,y,z))
+
+def append_spherical_np(xyz):
+    rtp = np.zeros(xyz.shape)
+    xy = xyz[0,:]**2 + xyz[1,:]**2
+    rtp[0,:] = np.sqrt(xy + xyz[2,:]**2)
+    rtp[1,:] = np.arctan2(np.sqrt(xy), xyz[2,:]) # for elevation angle defined from Z-axis down
+    rtp[2,:] = np.arctan2(xyz[1,:], xyz[0,:])
+    return np.vstack((xyz,rtp))
 
 def junction_CoM(ns):
     # computing CoM of Junction
     CoM_pos = np.zeros(3)
     base_cnt = 0
     center_ls = list(ns.center.values()) # center_ls: [center_base], len == 4*arm_num
-    center_ls.extend([base for arm in ns.arms.values() for base in list(arm.base_pairs.values())[-1]])
+    center_ls.extend([base for arm in ns.arms.values() for base in arm.base_pair[1]])
     for base in center_ls:
         CoM_pos = np.add(CoM_pos, np.array(base.position))
         base_cnt += 1
     CoM_pos = np.divide(CoM_pos, base_cnt)
     return CoM_pos
 
-def coord_rotate(ns, z_arm_id):
-    z_pair = [base for base in list(ns.arms[z_arm_id].base_pairs.values())[-1]] # start
-    z_end_pair = [base for base in list(ns.arms[z_arm_id].base_pairs.values())[0]] # end
-    # y = np.array(z_pair[0].position) - np.array(z_pair[1].position)
-    # y_unit = y/np.linalg.norm(y)
-    # y normal 2
+def coord_rotate(ns, dims_ls, z_arm_id):
+    '''
+    Create a rotation matrix that transform the space so that: 
+        the selected arm aligns with z-axis; 
+        cross the 1st z-arm base's backbone-to-base versor with z-axis to obtain y axis.
+    :ns: nanostar object
+    :z_arm_id: the arm chosen to be z-axis.
+    '''
+    z_pair = [base for base in ns.arms[z_arm_id].base_pairs[1]] # start
+    z_end_pair = [base for base in ns.arms[z_arm_id].base_pairs[dims_ls[0]]] # end
     z_arm = ns.arms[z_arm_id]
-    s_arm = False
-    for arm in ns.arms.values(): # this iteration always goes in the same order.
-        if arm.strand_id_0 == z_arm.strand_id_0 or arm.strand_id_0 == z_arm.strand_id_1 or arm.strand_id_1 == z_arm.strand_id_0 or arm.strand_id_1 == z_arm.strand_id_1:
-            s_arm = arm
-    s_pair = [base for base in list(s_arm.base_pairs.values())[-1]]
-    y_unit = np.cross(np.array(z_pair[0].normal), np.array(s_pair[0].normal))
     z = (np.array(z_end_pair[1].position) + np.array(z_end_pair[0].position))/2 - (np.array(z_pair[1].position) + np.array(z_pair[0].position))/2
     z_unit = z/np.linalg.norm(z)
+    y = np.cross(z_unit, np.array(z_pair[0].backbone))
+    if np.dot(y,y) < 0.9 : print(f'Magnitude of Y: {np.dot(y,y)} < 0.90')
+    y_unit = y/np.linalg.norm(y)
     x_unit = np.cross(y_unit,z_unit)
+    if np.dot(x_unit,x_unit) < 0.9 : print(f'Magnitude of x-unit: {np.dot(x_unit,x_unit)} < 0.90')
     rot_mat = np.vstack((x_unit,y_unit,z_unit)).T
     rot_mat = np.linalg.inv(rot_mat)
     return rot_mat
 
-def nanostar_vectorize(ns, sel_arm_id):
+def nanostar_vectorize(ns, dims_ls, sel_arm_id, arm_normalize):
+    '''
+    Transform a nanostar into two sets of points. 
+        CoM of junction ~ Origin, CoM_jun to last pair of an arm ~ arm vector (vec_ns_ls), CoM_jun to first pair of an arm ~ junction vector (vec_jun_ls)
+    Vectors are NOT normalized yet.
+    :sel_arm_id: the arm chosen to be z-axis.
+    '''
     vec_ns_ls = []
-    jun_CoM = junction_CoM(ns)
-    rot_mat = coord_rotate(ns, sel_arm_id)
+    vec_jun_ls = []
+    jun_CoM = junction_CoM(ns) # now arms are vectors pointing from CoM instead of 1st pair.
+    rot_mat = coord_rotate(ns, dims_ls, sel_arm_id)
     for ia, arm in ns.arms.items():
-        end_base_pair = [base for base in list(arm.base_pairs.values())[0]] # -1 is center
-        start_base_pair = [base for base in list(arm.base_pairs.values())[-1]] # -1 is center
-        # pair_pos = tuple(sum(x)/2 for x in zip(end_base_pair[0].position, end_base_pair[1].position))
+        end_base_pair = [base for base in arm.base_pairs[dims_ls[0]]] # -1 is center
+        start_base_pair = [base for base in arm.base_pairs[1]] # -1 is center
         end_pos = (np.array(end_base_pair[1].position) + np.array(end_base_pair[0].position))/2
         start_pos = (np.array(start_base_pair[1].position) + np.array(start_base_pair[0].position))/2
-        vec = end_pos - start_pos
+        vec = end_pos - jun_CoM
+        vec_jun = start_pos - jun_CoM
         vec = np.matmul(rot_mat,vec)
+        vec_jun = np.matmul(rot_mat,vec_jun)
+        if arm_normalize: 
+            arm_len = np.sqrt(np.dot(vec,vec))
+            vec = vec/arm_len
+            vec_jun = vec_jun/arm_len
         strands_using = (arm.strand_id_0, arm.strand_id_1)
         is_sharing_sel = ns.arms[sel_arm_id].strand_id_0 in strands_using or ns.arms[sel_arm_id].strand_id_1 in strands_using
         if is_sharing_sel:
             is_sharing_sel = 1 if ns.arms[sel_arm_id].strand_id_0 in strands_using else 2
-        # print(end_base_pair[0].base_id, end_base_pair[1].base_id)
+        # print(f'Arm ID: {ia} ; is_sharing: {is_sharing_sel}')
         vec_ns_ls.append((ia, tuple(vec), strands_using, is_sharing_sel))
-    return vec_ns_ls
+        vec_jun_ls.append((ia, tuple(vec_jun), strands_using, is_sharing_sel))
+    return vec_ns_ls, vec_jun_ls
 
 def k2_report_plot(summary_dic, plot_confs, data, color_list, marker_list, special_tasks=None):
+    # # temp: export data
+    # import pandas as pd
+    # df = pd.DataFrame()
     from utils.ns_plot import SL_ns
     from calc_tasks.k2_calc import k2_calc
     # mean only
@@ -194,6 +311,8 @@ def k2_report_plot(summary_dic, plot_confs, data, color_list, marker_list, speci
                 k2_ls, label, plotpath = SL_ns(k2_calc, data, 'k2')
                 k2_arr = np.array([tu[1] for tu in k2_ls])
                 k2_arr_ls.append(k2_arr)
+                # k2_series = pd.DataFrame({f'conc: {conc},temp: {temp}, arm_num: {arm_num}':k2_arr.round(4)})
+                # df = pd.concat([df,k2_series], axis=1)
             # axs[j].violinplot(k2_arr_ls, positions=[a-0.3/2+0.3*i for a in arm_num_list], split=True)
 
             # boxplot
@@ -225,6 +344,8 @@ def k2_report_plot(summary_dic, plot_confs, data, color_list, marker_list, speci
         axs[j].set_title(f'{conc} M [NaCl]')
         for arm_num in arm_num_list[:-1]:
             axs[j].axvline(arm_num+0.5,c='black', linewidth=0.5, linestyle='--')
+    # with open('k2_export.csv','w') as csv:
+    #     df.to_csv(csv)
     from matplotlib.lines import Line2D
     custom_lines = [Line2D([0], [0], color=color_list[i], lw=2) for i in range(len(temp_list))]
     legend = axs[0].legend(custom_lines, [f'{temp}℃' for temp in temp_list], loc='upper left')
@@ -398,6 +519,44 @@ def k2_report_plot_old(summary_dic, plot_confs, data, color_list, marker_list, s
         axs = special_tasks(axs, data, None)
     '''
     return plt
+
+def coord_rotate_support_arm(ns, dims_ls, z_arm_id):
+    '''
+    Create a rotation matrix that transform the space so that: the selected arm aligns with z-axis; an arm sharing one strand with z-arm lies in x-z plane.
+    Note that:
+        This matrix is NOW an orthonormal basis. Bug fixed.
+        Normal vector of 1st pairs of s-arm and Z-unit vector are crossed to obtain y-axis.
+        Consider changing z-axis from z-arm vector to CoM_jun ~ last base pair of z-arm?
+    WIP: auto-skip to a more orthogonal s-arm. Warning: it may flip back to 1st choice if it becomes orthogonal.
+    :ns: nanostar object
+    :z_arm_id: the arm chosen to be z-axis.
+    '''
+    z_pair = [base for base in ns.arms[z_arm_id].base_pairs[1]] # start
+    z_end_pair = [base for base in ns.arms[z_arm_id].base_pairs[dims_ls[0]]] # end
+    # y = np.array(z_pair[0].position) - np.array(z_pair[1].position)
+    # y_unit = y/np.linalg.norm(y)
+    # y normal 2
+    z_arm = ns.arms[z_arm_id]
+    # s_arm = False # supplementary arm: fixing the z-y plane
+    for arm in ns.arms.values(): # this iteration always goes in the same order.
+        if (arm.arm_id != z_arm.arm_id) and (arm.strand_id_0 == z_arm.strand_id_0 or arm.strand_id_0 == z_arm.strand_id_1 or arm.strand_id_1 == z_arm.strand_id_0 or arm.strand_id_1 == z_arm.strand_id_1):
+            s_arm = arm
+            s_pair = [base for base in s_arm.base_pairs[1]]  
+            z = (np.array(z_end_pair[1].position) + np.array(z_end_pair[0].position))/2 - (np.array(z_pair[1].position) + np.array(z_pair[0].position))/2
+            z_unit = z/np.linalg.norm(z)
+            y = np.cross(z_unit, np.array(s_pair[0].normal))
+            y_mag = np.dot(y,y)
+            print(f'Magnitude of Y: {y_mag}')
+            if y_mag > 0.7:
+                break
+    print(f'Supplementary Arm number: {s_arm.arm_id}')
+    y_unit = y/np.linalg.norm(y)
+    x_unit = np.cross(y_unit,z_unit)
+    # x_unit = x/np.linalg.norm(x)
+    # print(f'x-unit: {np.dot(x_unit,x_unit)} , y-unit: {np.dot(y_unit,y_unit)} , z-unit: {np.dot(z_unit,z_unit)}')
+    rot_mat = np.vstack((x_unit,y_unit,z_unit)).T
+    rot_mat = np.linalg.inv(rot_mat)
+    return rot_mat
 
 
 def k2_report_plot_seaborn(summary_dic, plot_confs, data, color_list, marker_list, special_tasks=None):

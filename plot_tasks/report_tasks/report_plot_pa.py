@@ -13,7 +13,11 @@ def report_plot_pa():
     temp_list = [temp]
     arm_num_list = [arm_num]
     data = (conf_suffix, dims_ls, conc_list, temp_list, arm_num_list)
-    plt = pa_3d_report_plot(data)
+    plt,fig = pa_3d_report_plot(data)
+    # tmp: pickle dump
+    chkdir(os.path.dirname('report/pa3d.plt'))
+    import pickle
+    pickle.dump(fig, open('report/pa3d.plt',"wb"))
     chkdir(os.path.dirname('report/pa3d.png'))
     plt.savefig('report/pa3d.png',dpi=500)
     plt.close()

@@ -12,6 +12,12 @@ def special_tasks(axs, data, task_list):
     return axs
 
 def summ_plot_k2_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list):
+    '''
+    Summary plot (#unpaired at junction varied) of k2.
+    k2 ---> 1: anisotropic; ---> 0: isotropic.
+    Set varname and plot confs.
+    Define special tasks to customize the plot.
+    '''
     assert len(color_list) == len(marker_list) == len(temp_list)
     varname = 'k2'
     #### plot confs ####

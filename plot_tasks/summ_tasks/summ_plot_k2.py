@@ -13,6 +13,12 @@ def special_tasks(axs, data, task_list):
 
 
 def summ_plot_k2(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list):
+    '''
+    Summary plot (design fixed) of k2 ==1-27*λ1*λ2*λ3/(λ1+λ2+λ3)^3, where λi is the principal value of the tensor of inertia along an axis.
+    k2 ---> 1: anisotropic; ---> 0: isotropic.
+    Set varname and plot confs.
+    Define special tasks to customize the plot.
+    '''
     assert len(conc_list) == len(color_list) == len(marker_list)
     varname = 'k2'
     #### plot confs ####    

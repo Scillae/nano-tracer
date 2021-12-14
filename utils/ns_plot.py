@@ -6,6 +6,9 @@ from scipy import stats
 import os.path
 
 def moments_calc(n, var_ls):
+    '''
+    Calculate the 0th raw, 1st raw, 2nd central, and 3rd standardized moment of a given distribution.
+    '''
     n = np.array(n)
     m0 = np.sum(n) # 0th unitless raw moment: integration
     m1 = np.sum(var_ls)/m0
@@ -17,6 +20,13 @@ def moments_calc(n, var_ls):
 
 
 def SL_ns(calc_func, data, varname):
+    '''
+    Load the calculated result of a measurement.
+    If not exists, calculate using ns_func, and then save.
+    :calc_func: a calc_func that calculate the desired measurement.
+    :data: in which the descriptions of nanostars (trajectory) are stored.
+    :varname: codename of the measurement.
+    '''
     arms, temp, conc, sp_suffix, conf_suffix, dims_ls = data
     label = f'{arms}arms@({temp}C,{conc}M){conf_suffix}{sp_suffix}'
     loose_lbl = f'{temp}C-{conc}M-GPU{sp_suffix}'
@@ -36,6 +46,15 @@ def SL_ns(calc_func, data, varname):
 
 
 def ns_plot(data_process_func, results, plot_confs, data, varname):
+    '''
+    Plot the histogram (distribution) of a single trajectory.
+    Plot: frequency vs value.
+    :data_process_func: a function that process the obtained measurements into desired float-valued numbers.
+    :results: a dictionary/nested list that contains the obtained measurements
+    :plot_confs: params of the plot.
+    :data: in which the descriptions of nanostars (trajectory) are stored. NOT the data to be plotted.
+    :varname: codename of the measurement.
+    '''
     varname, x_var, x_lim, y_lim, text_pos, bin_num = plot_confs
     var_ls_results, label, plotpath = results
 

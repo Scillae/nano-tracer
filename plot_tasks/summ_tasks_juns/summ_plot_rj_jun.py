@@ -12,6 +12,11 @@ import os.path
 #     return axs
 
 def summ_plot_rj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list):
+    '''
+    Summary plot (#unpaired at junction varied) of radius of gyration of junction: RMS distance of all central bases (paired+unpaired).
+    Set varname and plot confs.
+    Define special tasks to customize the plot.
+    '''
     assert len(color_list) == len(marker_list) == len(temp_list)
     varname = 'rj'
     #### plot confs ####

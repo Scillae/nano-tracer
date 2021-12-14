@@ -31,10 +31,10 @@ def patch_angle_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys
             for idx_2 in range(idx_1+1, len(arms_idx)):
                 ia2 = arms_idx[idx_2]
                 arm2 = arms[ia2]
-                first_pair_a1 = list(arm1.base_pairs.values())[-1] # -1 is center
-                first_pair_a2 = list(arm2.base_pairs.values())[-1]
-                last_pair_a1 = list(arm1.base_pairs.values())[0] # tuples (s0[i],s1[i])
-                last_pair_a2 = list(arm2.base_pairs.values())[0]
+                first_pair_a1 = arm1.base_pairs[1] # -1 is center
+                first_pair_a2 = arm2.base_pairs[1]
+                last_pair_a1 = arm1.base_pairs[dims_ls[0]] # tuples (s0[i],s1[i])
+                last_pair_a2 = arm2.base_pairs[dims_ls[0]]
                 base_ls = list(last_pair_a1)
                 base_ls.extend(last_pair_a2)
                 if len(set([base.strand_id for base in base_ls])) < 4:

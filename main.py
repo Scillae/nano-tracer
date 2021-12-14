@@ -3,6 +3,10 @@ from plot_tasks.summ_tasks_juns import summ_plot_pa_jun, summ_plot_k2_jun, summ_
 # import numpy as np
 
 def data_extraction(varname, arms, temp, conc, conf_suffix, sp_suffix = ''):
+    '''
+    For debug.
+    Extract the desired data of a given design of nanostar at a given condition.
+    '''
     dims_ls = [20,2,7]
     label = f'{arms}arms@({temp}C,{conc}M){conf_suffix}{sp_suffix}'
     loose_lbl = f'{temp}C-{conc}M-GPU{sp_suffix}'
@@ -12,11 +16,19 @@ def data_extraction(varname, arms, temp, conc, conf_suffix, sp_suffix = ''):
     return result
 
 def calc_data_extraction(varname, arms, temp, conc, conf_suffix, sp_suffix = ''):
+    '''
+    For debug.
+    Extract the calculated results of measurements of a given design at a given condition
+    '''
     varname = varname+'tp'
     result = data_extraction(varname, arms, temp, conc, conf_suffix, sp_suffix)
     return result
 
 def datapoint_location(tg_value, result):
+    '''
+    For debug.
+    Locate the desired value in a timestamp~value tuple list
+    '''
     import numpy as np
     result_val = [tp[1] for tp in result]
     r_arr = np.array(result_val)
@@ -25,6 +37,9 @@ def datapoint_location(tg_value, result):
     return t_stamp, r_tg
 
 def calc_value_obtain():
+    '''
+    For debug.
+    '''
     arms = 3
     temp = 30
     conc = 0.5
@@ -41,6 +56,10 @@ def dist(t1, t2):
     return np.sqrt(np.sum(np.square(np.array(t1) - np.array(t2))))
 
 def debug_ns_arm_examine():
+    '''
+    For debug.
+    Print out the pairing of a nanostar.
+    '''
     arms = 3
     temp = 30
     conc = 0.5
@@ -59,7 +78,10 @@ def debug_ns_arm_examine():
     return True
 
 def single_pairing_all(sys):
-    
+    '''
+    For debug.
+    Pair the bases in a strand system only by finding the closest base.
+    '''
     # id_pairs = []
     # strands_ls = [list(strand.base_sequence.values()) for strand in sys.values()]
     # l = len(strands_ls[0])
@@ -85,6 +107,9 @@ def single_pairing_all(sys):
     return id_pairs
 
 def debug_pairing():
+    '''
+    For debug.
+    '''
     arms = 3
     temp = 30
     conc = 0.5
@@ -104,6 +129,14 @@ def debug_pairing():
 
 # jobs: arbitrary work batches; should be packed into tasks if reusable.
 def summ_plot_main():
+    '''
+    Summary plot of nanostars with its design fixed. (default dimensions:[20,2,7])
+    Summary plot: [tasks of] var vs temp [at different conc and arm_num]
+    Set conditions in conc_list, temp_list, arm_num_list. Length must > 2
+    The lengths of color_list and marker_list must  == len(conc_list)
+    To change the dims, set both dims_ls (affect the interpretation of trajectory file) and conf_suffix (to read which trajectory)
+    pa == patch angle, k2 == k2, as == arm stiffness, pj == atch angle of junction, kj == k2 of junction, rj == radius of gyration of junction, js == junction shift, pan == orthogonal patch angle, pjn == orthogonal patch angle of junction
+    '''
     conf_suffix = '' # -jun_10
     dims_ls = [20, 2, 7]
     conc_list = [0.05, 0.1, 0.3, 0.5] # 0.05, 0.1, 0.3, 0.5
@@ -129,6 +162,14 @@ def summ_plot_main():
     return True
 
 def summ_plot_main_jun():
+    '''
+    Summary plot of nanostars with its design varied: currently varying the central unpaired bases at junction (default dimensions:[20,n,7])
+    Summary plot: [tasks of] var #unpaired bases [at different temp, arm_num and conc]
+    Set designs in jun_list. Length must > 2
+    Set conditions in conc_list, temp_list, arm_num_list. Length must > 2
+    The lengths of color_list and marker_list must  == len(temp_list)
+    var conf_suffix is only for debug; var dims_ls is dummy now.
+    '''
     conf_suffix = '' # -jun_10
     dims_ls = [20,2,7]
     conc_list = [0.1, 0.5]
@@ -154,6 +195,9 @@ def summ_plot_main_jun():
     return True
 
 def report_plot():
+    '''
+    Draw plots for report.
+    '''
     conf_suffix = '' # -jun_10
     dims_ls = [20, 2, 7]
     conc_list = [0.05, 0.5] # 0.05, 0.1, 0.3, 0.5
@@ -164,12 +208,12 @@ def report_plot():
     # customization of series ~ conc
     color_list = ['#4994FF','#E55050','#FFF555','#7AA77A'] # np.array((0.1, 0.2, 0.5)).reshape((1,3))  '#4994FF','#E55050','#FFF555','#7AA77A'
     marker_list = ['^','v','o','s'] # 'o','v','^','s'
-    from plot_tasks.report_tasks.report_plot_k2 import report_plot_k2
-    report_plot_k2(conf_suffix,dims_ls,conc_list,temp_list,arm_num_list,color_list,marker_list)
+    # from plot_tasks.report_tasks.report_plot_k2 import report_plot_k2
+    # report_plot_k2(conf_suffix,dims_ls,conc_list,temp_list,arm_num_list,color_list,marker_list)
     # from plot_tasks.report_tasks.report_plot_js import report_plot_js
     # report_plot_js()
-    # from plot_tasks.report_tasks.report_plot_pa import report_plot_pa
-    # report_plot_pa()
+    from plot_tasks.report_tasks.report_plot_pa import report_plot_pa
+    report_plot_pa()
     return True
 
 def misc():
@@ -197,7 +241,7 @@ if __name__ == '__main__':
     # summ_plot_main()
     # summ_plot_main_jun()
     # misc()
-    # calc_value_obtain()
+    # calc_value_obtain()zhi
     # debug_ns_arm_examine()
     # debug_pairing()
     report_plot()

@@ -18,18 +18,13 @@ class Arm:
     # pair bases
     def pair(self, dims_ls, leading_strid, strands):
         len_arm, len_cen, len_end = dims_ls
-        # Noella: Questioned_sci(dic or list) - dict
-        # strand.base_sequence is a `list` not `OrderedDict`
         s0 = list(strands[leading_strid].base_sequence.values())
-        # s0 = list(strands[leading_strid].base_sequence)
         del strands[leading_strid]
-        # Noella: Questioned_sci(dic or list) - dict
         s1 = list(list(strands.values())[0].base_sequence.values())
         s1.reverse() # reverse s1 so that the single_end is at the start.
-        # s1 = list(list(strands.values())[0].base_sequence)
 
-        pair_tp_dic = OrderedDict()
-        single_end_dic = OrderedDict()
+        pair_tp_dic = OrderedDict() # {pair_id:(pair_base0, pair_base1)}
+        single_end_dic = OrderedDict() # {single_end_id:single_end_base}
         for i in range(len_end):
             # index starts from center, beginning from 1.
             single_end_dic[len_end - i] = s1[i]

@@ -5,6 +5,12 @@ import os.path
 
 
 def summ_plot_as(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list):
+    '''
+    Summary plot (design fixed) of arm stiffness: breaking the arms into 2 (customizable) vectors, and summarizing their angles (normalized).
+    AS == 0: straight. AS == 1: 180°
+    Set varname and plot confs.
+    Define special tasks to customize the plot.
+    '''
     assert len(conc_list) == len(color_list) == len(marker_list)
     varname = 'as'
     #### plot confs ####    

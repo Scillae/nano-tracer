@@ -51,6 +51,12 @@ def formatter(type_list, s):
     return res
 
 def save_load(p, obj):
+    '''
+    Save an object if not saved, or load an object if not loaded.
+    If both saved and loaded, update the saved one.
+    :p: path of the saved.
+    :obj: object, the loaded one.
+    '''
     print(f'TM path: {p}')
     if p != None:
         chkdir(os.path.dirname(p)) # os.path.split(p)[0]
@@ -74,12 +80,22 @@ def save_load(p, obj):
     return r_obj
 
 def chkdir(d):
+    '''
+    Create a directory if not existing.
+    '''
     if not os.path.isdir(d):
         os.makedirs(d)
         print(f'Created Directory: {d}')
     return
 
 def dims_adjust(dims_ls, conf_suffix, single=True, sp_suffix=''):
+    '''
+    Adjust the dims_ls based on conf_suffix
+    :dims_ls: the dimensions of the nanostar
+    :conf_suffix: the suffix describing nanostar's configuration
+    :single: if it's for a single nanostar
+    :sp_suffix: special suffix
+    '''
     dims_ls = [20,2,7]
     if conf_suffix.split('_')[0] == '':
         return

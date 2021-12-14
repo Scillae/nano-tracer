@@ -13,6 +13,11 @@ import os.path
 
 
 def summ_plot_js(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list):
+    '''
+    Summary plot (design fixed) of junction shift: distance between CoM of the whole nanostar and the CoM of the junction.
+    Set varname and plot confs.
+    Define special tasks to customize the plot.
+    '''
     assert len(conc_list) == len(color_list) == len(marker_list)
     varname = 'js'
     #### plot confs ####    

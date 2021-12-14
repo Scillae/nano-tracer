@@ -5,6 +5,13 @@ import numpy as np
 
 
 def SL(ns_func, data, varname):
+    '''
+    Load the result of summary.
+    If not exists, calculate using ns_func, and then save.
+    :ns_func: a ns_func that calculate and summarize the distribution of the desired measurement.
+    :data: in which the descriptions of nanostars (trajectory) are stored.
+    :varname: codename of the measurement.
+    '''
     conf_suffix, dims_ls, conc_list, temp_list, arm_num_list = data
     savepath = f'summary/{arm_num_list}Arms{conf_suffix}/{temp_list}C-{conc_list}M'
     su_path = f'{savepath}-{varname}.sudic' # (p_angs_dic, ns_tm, ns_last, sys)
@@ -20,6 +27,14 @@ def SL(ns_func, data, varname):
     return su_dic_results, savepath
 
 def SL_jun(ns_func, data, conc_list, varname):
+    '''
+    Load the result of summary. Design of nanostars varied (#unpaired junction bases).
+    If not exists, calculate using ns_func, and then save.
+    :ns_func: a calc_func that calculate the desired measurement.
+    :conc_list: desired concentrations. Each conc one plot, so provided separately.
+    :data: in which the descriptions of nanostars (trajectory) are stored.
+    :varname: codename of the measurement.
+    '''
     jun_list, dims_ls, temp_list, arm_num_list = data
     # plot: conc ~ {x: jun_nums, y: summaries, series: temperature}
     # assume saved, read corr. dics
@@ -47,6 +62,16 @@ def SL_jun(ns_func, data, conc_list, varname):
     return jun_summ_dic, savepath
 
 def summ_plot(summary_dic, plot_confs, data, task_list, color_list, marker_list, special_tasks=None):
+    '''
+    Plot the summary of a measurement.
+    Plot: len(task_list) * len(arm_num_list), var vs temp, series: conc
+    :summary_dic: summary of measurement.
+    :plot_confs: params of the plot.
+    :data: in which the descriptions of nanostars (trajectory) are stored. NOT the data to be plotted.
+    :task_list: tasks to be plotted.
+    ...
+    :special_tasks: a function that modifies the plots.
+    '''
     xlim, ylim_avg, ylim_std, ylim_skw, y_var = plot_confs # unpack configurations
     conf_suffix, dims_ls, conc_list, temp_list, arm_num_list = data
     # plot
@@ -89,6 +114,17 @@ def summ_plot(summary_dic, plot_confs, data, task_list, color_list, marker_list,
     return plt
 
 def summ_plot_jun(jun_summ_dic, plot_confs, data, conc, task_list, color_list, marker_list, special_tasks=None):
+    '''
+    Plot the summary of a measurement. Design of nanostars varied (#unpaired junction bases).
+    Plot: len(task_list) * len(arm_num_list), var vs #unpaired bases, series: temp
+    :summary_dic: summary of measurement.
+    :plot_confs: params of the plot.
+    :data: in which the descriptions of nanostars (trajectory) are stored. NOT the data to be plotted.
+    :task_list: tasks to be plotted.
+    :conc: concentration. Note that different conc ~ different summary.
+    ...
+    :special_tasks: a function that modifies the plots.
+    '''
     xlim, ylim_avg, ylim_std, ylim_skw, y_var = plot_confs # unpack configurations
     jun_list, dims_ls, temp_list, arm_num_list = data
     # a figure
