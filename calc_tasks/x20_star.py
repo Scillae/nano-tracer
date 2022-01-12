@@ -1,5 +1,6 @@
 from readers import Reader, NanoConstructor
 import numpy as np
+from collections import OrderedDict
 
 def x20_star(path_top = 'data/6-arm-nanostar-starlike-412kInit.top', path_traj = 'data/6-arm-nanostar-starlike-412kInit.conf', nm_input = None, sys_input = None, arm_n = 4):
     dims_ls = [20,2,7]
@@ -18,9 +19,9 @@ def x20_star(path_top = 'data/6-arm-nanostar-starlike-412kInit.top', path_traj =
     # finish savepoint loading
 
     # patch angle
-    p_angs_vtime_dic = {}
+    p_angs_vtime_dic = OrderedDict()
     for t_stamp, nm in nm_tm.time_capsule.items():
-        p_angs_vnsid_dic = {}
+        p_angs_vnsid_dic = OrderedDict()
         for ns_idx, (ns, arm_num) in nm.nodes.items():
             # Noella: Questioned_sci(dic or list) - dict
             # base is a tuple defined at line 21 in NanoConstructor

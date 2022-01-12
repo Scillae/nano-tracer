@@ -2,6 +2,7 @@ from utils.tools import save_load
 import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
+from collections import OrderedDict
 
 
 def SL(ns_func, data, varname):
@@ -17,7 +18,7 @@ def SL(ns_func, data, varname):
     su_path = f'{savepath}-{varname}.sudic' # (p_angs_dic, ns_tm, ns_last, sys)
     su_dic_results = save_load(su_path, None)
     if su_dic_results == False:
-        summary_dic = {} # {(keys):(mn)}
+        summary_dic = OrderedDict() # {(keys):(mn)}
         for arm_num in arm_num_list:
             for conc in conc_list:
                 for temp in temp_list:
@@ -38,7 +39,7 @@ def SL_jun(ns_func, data, conc_list, varname):
     jun_list, dims_ls, temp_list, arm_num_list = data
     # plot: conc ~ {x: jun_nums, y: summaries, series: temperature}
     # assume saved, read corr. dics
-    jun_summ_dic = {} # {jun:{(keys):(mn)}}
+    jun_summ_dic = OrderedDict() # {jun:{(keys):(mn)}}
     assert len(jun_list) > 0
     for jun in jun_list:
         if jun == 2:
@@ -50,7 +51,7 @@ def SL_jun(ns_func, data, conc_list, varname):
         su_path = f'{savepath}-{varname}.sudic' # (p_angs_dic, ns_tm, ns_last, sys)
         su_dic_results = save_load(su_path, None)
         if su_dic_results == False:
-            summary_dic = {} # {(keys):(mn)}
+            summary_dic = OrderedDict() # {(keys):(mn)}
             for arm_num in arm_num_list:
                 for conc in conc_list:
                     for temp in temp_list:

@@ -1,5 +1,6 @@
 from readers import Reader, NanoConstructor
 import numpy as np
+from collections import OrderedDict
 # Noella: Accepted_sci
 # call this function in main.py
 # if __name__ == '__main__':
@@ -19,7 +20,7 @@ def arm_stiffness_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, s
     # finish savepoint loading
 
     v_num = 2
-    arm_stf_vtime_dic = {} # {t_stamp: armstf_ls}
+    arm_stf_vtime_dic = OrderedDict() # {t_stamp: armstf_ls}
     for t_stamp, ns in ns_tm.time_capsule.items():
         arms = ns.arms
         armstf_ls = []

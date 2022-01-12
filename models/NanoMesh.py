@@ -11,7 +11,7 @@ class NanoMesh:
     def __init__(self, strands_dic, dims_ls):
         self.dim = dims_ls # dims_ls
         self.homogen_arms = True
-        self.nodes = {} # {ns#: (ns_obj, arm#)}
+        self.nodes = OrderedDict() # {ns#: (ns_obj, arm#)}
         self.conn_map = None
         # construct all nanostars
         # for all single-ends, (energy or topology) determine if bonded; if bonded: find nearest base -> find strand -> find nanostar
@@ -116,7 +116,7 @@ class NanoMesh:
         ns_idx = 0
         arm_num_ls = []
         for groups in strand_groups:
-            strands_nano = {}
+            strands_nano = OrderedDict()
             for i in groups:
                 strands_nano[i] = strands_dic[i]
             arm_num = len(strands_nano)
@@ -135,7 +135,7 @@ class NanoMesh:
     def __init__(self, strands_dic, dims_ls):
         self.dim = dims_ls # dims_ls
         self.homogen_arms = True
-        self.nodes = {} # {ns#: (ns_obj, arm#)}
+        self.nodes = OrderedDict() # {ns#: (ns_obj, arm#)}
         self.conn_map = None
         # construct all nanostars
         # for all single-ends, (energy or topology) determine if bonded; if bonded: find nearest base -> find strand -> find nanostar
@@ -242,7 +242,7 @@ class NanoMesh:
         ns_idx = 0
         arm_num_ls = []
         for groups in strand_groups:
-            strands_nano = {}
+            strands_nano = OrderedDict()
             for i in groups:
                 strands_nano[i] = strands_dic[i]
             arm_num = len(strands_nano)

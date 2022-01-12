@@ -11,7 +11,7 @@ class TimeMachine:
         self.cache_writer = None
         self.cache_reader = None
         self.mode = ''
-        self.time_capsule = {}
+        self.time_capsule = OrderedDict()
             
     # def save(self):
     #   if self.cache_writer is not None:

@@ -33,7 +33,7 @@ class Reader:
             # TODO handle undefined base
             'counts': (int, int),
         }
-        self.strands = {}
+        self.strands = OrderedDict()
         self.timestamp = -1
         self.time_machine = None
 
@@ -114,7 +114,7 @@ class Reader:
                         strands_r[strand_id] = Strand(strand_id, od)
                     self.strands = strands_r
                     self.time_machine.add_strands(self.timestamp, self.strands)
-                    self.strands = {}
+                    self.strands = OrderedDict()
                 else:
                     print(f'  Strands: {len(self.strands)}, timestamp: {list(self.strands.values())[0].timestamp}')
                     for i in self.strands.values():

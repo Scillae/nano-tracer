@@ -1,6 +1,6 @@
 from readers import Reader, NanoConstructor
 import numpy as np
-
+from collections import OrderedDict
 
 def patch_jun_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_input = None):
     # savepoint loading: strands-sys
@@ -18,7 +18,7 @@ def patch_jun_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_i
     # finish savepoint loading
     
     # TODO: change the definition of CENTER to: CoM of all junction bases.
-    p_angs_vtime_dic = {} #{t_stamp: angle_results_ls}
+    p_angs_vtime_dic = OrderedDict() #{t_stamp: angle_results_ls}
     for t_stamp, ns in ns_tm.time_capsule.items():
         center_ls = list(ns.center.values()) # center_ls: [center_base], len == 4*arm_num
         center_ls.extend([base for arm in ns.arms.values() for base in arm.base_pairs[1]]) # -1 is center

@@ -6,7 +6,7 @@ def report_plot_pa():
     conc = 0.5
     temp = 20
     arm_num = 4
-    dims_ls = None
+    dims_ls = [20,2,7]
     conf_suffix = '-jun_0'
 
     conc_list = [conc]

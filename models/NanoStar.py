@@ -132,11 +132,11 @@ class NanoStar:
         for i in range(len(binding_pts_2dls)):
             idx_arr = np.arange(len(binding_pts_2dls))
             idx_arr = idx_arr[idx_arr != i] # double-counting if '!=' ? Must Double Count! No Need to double count!
-            min_dist_dic = {}
+            min_dist_dic = OrderedDict()
             for j in idx_arr: # still need to compare 'ALL' pairs of DNAs
                 s0 = binding_pts_2dls[i]
                 s1 = binding_pts_2dls[j]
-                min_dist_pair_dic = {}
+                min_dist_pair_dic = OrderedDict()
                 for k in range(len(s0)):
                     for l in range(k+1, len(s1)):
                         min_dist_pair_dic[dist(s0[k], s1[l])] = [s0[k], s1[l]]

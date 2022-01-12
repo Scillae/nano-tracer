@@ -23,7 +23,7 @@ class Item(dict):
             return self[name]
         except:
             raise AttributeError(
-                'Item object has no attribute name {}'.format(name))
+                'Item object has no attribute name OrderedDict()'.format(name))
         # return super().__getattribute__(name)
 
     def __setattr__(self, name, value):
