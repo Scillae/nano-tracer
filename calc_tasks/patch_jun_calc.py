@@ -2,6 +2,9 @@ from readers import Reader, NanoConstructor
 import numpy as np
 from collections import OrderedDict
 
+def obtain_cos(v1,v2):
+    return np.degrees(np.arccos(np.sum(v1*v2)/(np.sqrt(np.sum(np.square(v1))) * np.sqrt(np.sum(np.square(v2)))))) # cos(x) = n1 * n2 / (|n1|*|n2|), angle only 0~pi, negative -> abs
+
 def patch_jun_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_input = None):
     # savepoint loading: strands-sys
     reader = Reader(path_top, path_traj)
@@ -49,8 +52,9 @@ def patch_jun_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_i
                 vec_2 = fp_a2_pos - junction_pos
                 # vec_1 = lp_a1_pos - fp_a1_pos
                 # vec_2 = lp_a2_pos - fp_a2_pos
-                ang_rad = np.arccos(np.sum(vec_1*vec_2)/(np.sqrt(np.sum(np.square(vec_1))) * np.sqrt(np.sum(np.square(vec_2))))) # cos(x) = n1*n2 / (|n1|*|n2|), angle only 0~pi, negative -> abs
-                angle_results_ls.append((ang_rad, is_sharing_strand, (ia1, ia2)))
+                ang_cos = obtain_cos(vec_1, vec_2) # 0~180
+                ang = ang_cos # if ang_cross >= 0 else (360 - ang_cos)
+                angle_results_ls.append((ang, is_sharing_strand, (ia1, ia2)))
         print(angle_results_ls, len(angle_results_ls))
         p_angs_vtime_dic[t_stamp] = angle_results_ls
     return p_angs_vtime_dic, arms_idx # ns: last_conf

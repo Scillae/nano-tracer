@@ -1,5 +1,5 @@
 from calc_tasks.patch_jun_calc import patch_jun_calc
-from utils.ns_plot import SL_ns, ns_plot
+from utils.ns_plot import SL_ns, ns_plot, ns_time_pa_plot
 from utils.tools import dims_adjust
 
 
@@ -42,6 +42,7 @@ def ns_pj_plot(single=True, arms=4, temp=30, conc=0.5, sp_suffix='', conf_suffix
     dims_adjust(dims_ls, conf_suffix, single, sp_suffix)
     data = (arms, temp, conc, sp_suffix, conf_suffix, dims_ls)
     results = SL_ns(patch_jun_calc, data, varname)
+    results_vtime = SL_ns(patch_jun_calc, data, varname, vtime=True)
     #### plot confs ####
     x_var = rf'Patch Angles of Junction ($^\circ$)'
     x_lim = (0,360)
@@ -51,6 +52,7 @@ def ns_pj_plot(single=True, arms=4, temp=30, conc=0.5, sp_suffix='', conf_suffix
     #### conf ends ####
     plot_confs = varname, x_var, x_lim, y_lim, text_pos, bin_num
     summary = ns_plot(data_process_func, results, plot_confs, data, varname) # summary: m1,std,m3_s
+    ns_time_pa_plot(data_process_func, results_vtime, plot_confs, data, varname)
     # ns_plot does save figures.
     return summary
         # moments ends

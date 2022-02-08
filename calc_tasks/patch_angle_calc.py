@@ -12,7 +12,7 @@ def obtain_cross(v1,v2):
     return np.cross(v1,v2)/(np.sqrt(np.sum(np.square(v1))) * np.sqrt(np.sum(np.square(v2)))) # sin(x) = (n1 x n2) / (|n1|*|n2|), angle only -90~90
 
 def patch_angle_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_input = None):
-    deprecation = False
+    deprecation = False # using the CoM_aligned method would make the length -1.
     if deprecation:
         return patch_angle_calc_CoM_aligned(path_top, path_traj, arm_num, dims_ls, ns_input, sys_input)
     # savepoint loading: strands-sys
@@ -62,7 +62,7 @@ def patch_angle_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys
                 vec_2 = lp_a2_pos - fp_a2_pos
                 ang_cos = obtain_cos(vec_1, vec_2) # 0~180
                 # ang_cross = obtain_cross(vec_1, vec_2) # -90~90
-                ang = ang_cos if ang_cross >= 0 else (360 - ang_cos)
+                ang = ang_cos # if ang_cross >= 0 else (360 - ang_cos)
                 angle_results_ls.append((ang, is_sharing_strand, (ia1, ia2)))
         print(angle_results_ls, len(angle_results_ls))
         p_angs_vtime_dic[t_stamp] = angle_results_ls
