@@ -23,9 +23,9 @@ def data_process_func(p_ang_ls_res, data, vtime = False): # should be trimmed.
             drop_t_ls.append(t_stamp)
             continue
         ## chk ends
-        for ang, is_sharing, ia_tp in ang_ls:
-            # {(ia1, ia2):{t_stamp:angle, 'is_sharing':is_sharing}}
-            angle_dic[ia_tp][t_stamp] = [ang] # tracing of specific p-angles
+        for ang, is_sharing, ia_tp, vec_tp in ang_ls:
+            # {(ia1, ia2):{t_stamp:[angle, vec1, vec2], 'is_sharing':is_sharing}}
+            angle_dic[ia_tp][t_stamp] = [ang, vec_tp] # tracing of specific p-angles
             if 'is_sharing' not in angle_dic[ia_tp].keys():
                 angle_dic[ia_tp]['is_sharing'] = is_sharing
     print(f'Total time steps dropped: {len(drop_t_ls)}')

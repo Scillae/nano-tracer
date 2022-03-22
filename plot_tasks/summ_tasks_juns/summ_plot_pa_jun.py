@@ -24,7 +24,7 @@ def summ_plot_pa_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task
     Set varname and plot confs.
     Define special tasks to customize the plot.
     '''
-    assert len(color_list) == len(marker_list) == len(temp_list)
+    # assert len(color_list) == len(marker_list) == len(temp_list)
     varname = 'pa'
     #### plot confs ####
     xlim = (-1, 11)

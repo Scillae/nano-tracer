@@ -140,6 +140,30 @@ def ns_time_js_plot(data_process_func, results, plot_confs, data, varname):
     plt.close()    
     return True
 
+def ns_time_k2_plot(data_process_func, results, plot_confs, data, varname):
+    assert varname in ['k2']
+    varname, x_var, x_lim, y_lim, text_pos, bin_num = plot_confs
+    var_ls_results, label, plotpath = results
+    var_dic = data_process_func(var_ls_results, data, vtime = True)
+    # 0: d1<l2, d2<l2; 1: d1>l2, d2<l2; 2: d1<l2, d2>l2; 3: d1>l2, d2>l2
+    shape_state_ls = [1 if (var_dic['deltas'][i][0]>var_dic['lambdas'][i][1]*0.5) and not (var_dic['deltas'][i][1]>var_dic['lambdas'][i][1]*0.5) else 2 if (var_dic['deltas'][i][1]>var_dic['lambdas'][i][1]*0.5) and not (var_dic['deltas'][i][0]>var_dic['lambdas'][i][1]*0.5) else 3 if (var_dic['deltas'][i][0]>var_dic['lambdas'][i][1]*0.5) and (var_dic['deltas'][i][1]>var_dic['lambdas'][i][1]*0.5) else 0 for i in range(len(var_dic['deltas']))]
+    lbds0 = [var_dic['lambdas'][i][0] for i in range(len(var_dic['deltas']))]
+    avg0 = sum(lbds0)/len(lbds0)
+    lbds1 = [var_dic['lambdas'][i][1] for i in range(len(var_dic['deltas']))]
+    avg1 = sum(lbds1)/len(lbds1)
+    lbds2 = [var_dic['lambdas'][i][2] for i in range(len(var_dic['deltas']))]
+    avg2 = sum(lbds2)/len(lbds2)
+    std2 = np.std(np.array(lbds2) / avg0)
+    std1 = np.std(np.array(lbds1) / avg0)
+    std0 = np.std(np.array(lbds0) / avg0)    
+    avg2 /= avg0
+    avg1 /= avg0
+    avg0t = avg0
+    avg0 /= avg0
+    with open('tmp\\tmp.txt','a') as f:
+        f.write(f'{label}. avg_lbd0:{avg0:.1f} ± {std0:.1f}, avg_lbd1:{avg1:.1f} ± {std1:.1f}, avg_lbd2:{avg2:.1f} ± {std2:.1f} , divider lbd0: {avg0t:.4f} \n')
+    return True
+
 def ns_time_pa_plot(data_process_func, results, plot_confs, data, varname):
     '''
     Plot the value (patch angle vtime) vs. time plot of a single trajectory.
@@ -327,18 +351,18 @@ def get_params(arm_num):
         time_window_width = 11 # 15
         stacking_min_length = 15 # 4arm only!
         stacking_crit_ang = 145 # 4arm only! # should be 130?
-        stacking_crit_rmsd = 10 # 4arm only!
+        stacking_crit_rmsd = 7 # 4arm only!
         nonstacking_min_length = 15 # 4arm only!
         nonstacking_crit_ang = 65 # 4arm only!
         nonstacking_crit_rmsd = 10 # 4arm only!
         ns_struc = {'#arm':5, 'pj_flip':True, 'linked_PA': [(0,1),(0,4),(1,2),(2,3),(3,4)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     elif arm_num == 6:
         time_window_width = 11 # 15
-        stacking_min_length = 1 # 4arm only!
+        stacking_min_length = 15 # 4arm only!
         stacking_crit_ang = 110 # 4arm only!
-        stacking_crit_rmsd = 13 # 4arm only!
-        nonstacking_min_length = 1 # 4arm only!
-        nonstacking_crit_ang = 65 # 4arm only!
+        stacking_crit_rmsd = 7 # 4arm only!
+        nonstacking_min_length = 15 # 4arm only!
+        nonstacking_crit_ang = 50 # 4arm only!
         nonstacking_crit_rmsd = 10 # 4arm only!
         ns_struc = {'#arm':6, 'pj_flip':True, 'linked_PA': [(0,1),(0,5),(1,2),(2,3),(3,4),(4,5)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     else:

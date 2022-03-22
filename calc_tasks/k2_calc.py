@@ -37,8 +37,9 @@ def k2_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_input = 
                 i_arr33[2][0] += -x*z*m
                 i_arr33[1][2] += -z*y*m
                 i_arr33[2][1] += -z*y*m
-        e_vals, _ = np.linalg.eig(i_arr33)
+        e_vals, e_vecs = np.linalg.eig(i_arr33)
         l1, l2, l3 = e_vals
+        v1, v2, v3 = e_vecs
         k2 = 1 - (27*l1*l2*l3)/((l1+l2+l3)**3)
-        k2_ls.append((t_stamp, k2))
+        k2_ls.append((t_stamp, k2,(l1, l2, l3),(v1, v2, v3)))
     return k2_ls
