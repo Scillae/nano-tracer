@@ -443,7 +443,7 @@ def get_params(arm_num):
         nonstacking_min_length = 10 # 4arm only!
         nonstacking_crit_ang = 105 # 4arm only!
         nonstacking_crit_rmsd = 12 # 4arm only!
-        ns_struc = {'#arm':3, 'pj_flip':True, 'linked_PA': [(0,1),(0,2),(1,2)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+        ns_struc = {'#arm':3, 'linked_PA': [(0,1),(0,2),(1,2)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     elif arm_num == 4:
         time_window_width = 11 # 15
         stacking_min_length = 1 # 4arm only!
@@ -452,7 +452,7 @@ def get_params(arm_num):
         nonstacking_min_length = 1 # 4arm only!
         nonstacking_crit_ang = 65 # 4arm only!
         nonstacking_crit_rmsd = 10 # 4arm only!
-        ns_struc = {'#arm':4, 'pj_flip':False, 'linked_PA': [(0,1),(0,3),(1,2),(2,3)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+        ns_struc = {'#arm':4, 'linked_PA': [(0,1),(0,3),(1,2),(2,3)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     elif arm_num == 5:
         time_window_width = 11 # 15
         stacking_min_length = 15 # 4arm only!
@@ -461,7 +461,7 @@ def get_params(arm_num):
         nonstacking_min_length = 15 # 4arm only!
         nonstacking_crit_ang = 65 # 4arm only!
         nonstacking_crit_rmsd = 10 # 4arm only!
-        ns_struc = {'#arm':5, 'pj_flip':True, 'linked_PA': [(0,1),(0,4),(1,2),(2,3),(3,4)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+        ns_struc = {'#arm':5, 'linked_PA': [(0,1),(0,4),(1,2),(2,3),(3,4)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     elif arm_num == 6:
         time_window_width = 11 # 15
         stacking_min_length = 15 # 4arm only!
@@ -470,7 +470,7 @@ def get_params(arm_num):
         nonstacking_min_length = 15 # 4arm only!
         nonstacking_crit_ang = 50 # 4arm only!
         nonstacking_crit_rmsd = 10 # 4arm only!
-        ns_struc = {'#arm':6, 'pj_flip':True, 'linked_PA': [(0,1),(0,5),(1,2),(2,3),(3,4),(4,5)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+        ns_struc = {'#arm':6, 'linked_PA': [(0,1),(0,5),(1,2),(2,3),(3,4),(4,5)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     else:
         assert 0==1
     assert time_window_width % 2 == 1 # must be odd
