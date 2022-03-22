@@ -1,5 +1,5 @@
 from calc_tasks import k2_calc
-from utils.ns_plot import SL_ns, ns_plot, ns_time_k2_plot
+from utils.ns_plot import SL_ns, ns_plot, ns_time_k2_plot, ns_heatmap_k2_plot
 from utils.tools import dims_adjust
 
 
@@ -32,6 +32,7 @@ def ns_k2_plot(single=True, arms=4, temp=30, conc=0.5, sp_suffix='', conf_suffix
     #### conf ends ####
     plot_confs = varname, x_var, x_lim, y_lim, text_pos, bin_num
     summary = ns_plot(data_process_func, results, plot_confs, data, varname) # summary: m1,std,m3_s
-    ns_time_k2_plot(data_process_func, results_vtime, plot_confs, data, varname)
+    # ns_time_k2_plot(data_process_func, results_vtime, plot_confs, data, varname)
+    ns_heatmap_k2_plot(data_process_func, results_vtime, plot_confs, data, varname)
     # ns_plot does save figures.
     return summary

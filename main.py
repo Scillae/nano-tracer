@@ -27,7 +27,6 @@ def summ_plot_main():
     temp_list = [20, 23, 27, 30, 40, 50] # 20, 23, 27, 30, 40, 50
     arm_num_list=[3, 4, 5, 6] #3, 4, 5, 6
     task_list = ['Mean', 'ST Dev', 'Skewness'] # m1, std, m
-    # summ_list = ['-Patch', '-k2']
     # customization of series ~ conc
     color_list = ['#4994FF','#E55050','#FCC555','#7AA77A'] # np.array((0.1, 0.2, 0.5)).reshape((1,3))  '#4994FF','#E55050','#FFF555','#7AA77A'
     marker_list = ['o','v','^','s'] # 'o','v','^','s'
@@ -35,7 +34,7 @@ def summ_plot_main():
     #     dims_ls[1] = conf_suffix[-1]
 
     # summ_plot_pa(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
-    summ_plot_k2(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
+    # summ_plot_k2(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
     # summ_plot_as(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)    
     # summ_plot_pj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
     # summ_plot_kj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
@@ -56,16 +55,15 @@ def summ_plot_main_jun():
     '''
     conf_suffix = '' # -jun_10
     dims_ls = [20,2,7]
-    conc_list = [0.1] # , 0.5
-    temp_list = [30] #20 , 
+    conc_list = [0.1, 0.5] # 0.1 , 0.5
+    temp_list = [20 , 30] # 20 , 30
     arm_num_list=[4] #3,4,5,6
     task_list = ['Mean', 'ST Dev', 'Skewness'] # m1, std, m
-    # summ_list = ['-Patch', '-k2']
     # customization of series ~ conc
     color_list = ['#4994FF','#E55050'] # np.array((0.1, 0.2, 0.5)).reshape((1,3))
     marker_list = ['o','v']
 
-    jun_list = [10] #0,1,2,5,
+    jun_list = [0,1,2,5,10] #0,1,2,5,10
 
     summ_plot_pa_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)   
     # summ_plot_k2_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
@@ -302,7 +300,7 @@ def moments_calc(n, var_ls):
 # jobs end
 
 if __name__ == '__main__':
-    # summ_plot_main()
+    summ_plot_main()
     summ_plot_main_jun()
     # misc()
     # debug_ns_arm_examine()

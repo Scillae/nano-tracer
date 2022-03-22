@@ -164,6 +164,115 @@ def ns_time_k2_plot(data_process_func, results, plot_confs, data, varname):
         f.write(f'{label}. avg_lbd0:{avg0:.1f} ± {std0:.1f}, avg_lbd1:{avg1:.1f} ± {std1:.1f}, avg_lbd2:{avg2:.1f} ± {std2:.1f} , divider lbd0: {avg0t:.4f} \n')
     return True
 
+def ns_heatmap_k2_plot(data_process_func, results, plot_confs, data, varname):
+    assert varname in ['k2']
+    varname, x_var, x_lim, y_lim, text_pos, bin_num = plot_confs
+    var_ls_results, label, plotpath = results
+    time_window_width, stacking_min_length, stacking_crit_ang, stacking_crit_rmsd, nonstacking_min_length, nonstacking_crit_ang, nonstacking_crit_rmsd, ns_struc = get_params(int(label[0]))    
+    var_dic = data_process_func(var_ls_results, data, vtime = True)
+    # read stacking
+    path = plotpath.split('/')
+    p = path[3].split('_')
+    p[0] = path[2] = 'pj'
+    path[3] = '_'.join(p)
+    pj_path = '/'.join(path)
+    with open(os.path.splitext(pj_path)[0]+'.stack','rb') as f:
+        nonstacking_vtime_dic, stacking_vtime_dic = pickle.load(f)
+    # determine if the NS is stacking
+    time_idx = stacking_vtime_dic[(0,1)]['t']
+    stacking_state_arr = np.zeros(len(time_idx))
+    for idx in ns_struc['linked_PA']:
+        stacking_state_arr += np.array(stacking_vtime_dic[idx]['bool'], dtype=int)
+    num_stacking = len(stacking_state_arr) - sum([1 if b == 0 else 0 for b in stacking_state_arr])
+    num_double_stacking = sum([1 if b == 2 else 0 for b in stacking_state_arr])
+    is_high_prop_stacking = True if num_stacking/len(stacking_state_arr) > 0.122 else False
+    # load data
+    lbd_axs_ls = k2_dict['axes']
+    lbd1_ls = []
+    l2_ls = []
+    l3_ls = []
+    for conf_lbd in lbd_axs_ls:
+        (lbd1,axs1),(lbd2,axs2),(lbd3,axs3) = conf_lbd
+        lbd1_ls.append(lbd1)
+        l2_ls.append(lbd2/lbd1)
+        l3_ls.append(lbd3/lbd2)
+    l2_arr = np.array(l2_ls)
+    l3_arr = np.array(l3_ls)
+    if is_high_prop_stacking:
+        draw_k2_heatmap(is_high_prop_stacking, True, plotpath)
+        draw_k2_heatmap(is_high_prop_stacking, False, plotpath, number_stack=0)
+        draw_k2_heatmap(is_high_prop_stacking, False, plotpath, number_stack=1)
+        draw_k2_heatmap(is_high_prop_stacking, False, plotpath, number_stack=2)
+        draw_k2_heatmap(is_high_prop_stacking, False, plotpath, number_stack=0, is_reverse_select_number_stack=True)
+    else:
+        draw_k2_heatmap(is_high_prop_stacking, True, plotpath)
+    return True
+
+def draw_k2_heatmap(is_high_prop_stacking, is_draw_all, plotpath, number_stack = 2, is_reverse_select_number_stack = False):
+    title_high_prop = 'Stacking' if is_high_prop_stacking else 'No-stacking'
+    if is_draw_all:
+        is_containing_stack = np.array(stack_dict[(0,1)]['bool']) + np.array(stack_dict[(1,2)]['bool']) + np.array(stack_dict[(2,3)]['bool']) + np.array(stack_dict[(0,3)]['bool'])
+    else:
+        is_containing_stack = (np.array(stack_dict[(0,1)]['bool'],dtype=int) + np.array(stack_dict[(1,2)]['bool'],dtype=int) + np.array(stack_dict[(2,3)]['bool'],dtype=int) + np.array(stack_dict[(0,3)]['bool'],dtype=int))==number_stack
+    l2_arr = l2_arr[5:-5]
+    l3_arr = l3_arr[5:-5]
+    if not is_reverse_select_number_stack:
+        l2_arr = l2_arr[is_containing_stack]
+        l3_arr = l3_arr[is_containing_stack]
+        title_not_reverse = ''
+    else:
+        l2_arr = l2_arr[~is_containing_stack]
+        l3_arr = l3_arr[~is_containing_stack]        
+        title_not_reverse = 'NOT'
+    import scipy.stats as stat
+    xmin = 1
+    xmax = 10
+    ymin = 1
+    ymax = 10
+    X, Y = np.mgrid[xmin:xmax:1000j, ymin:ymax:1000j]
+    positions = np.vstack([X.ravel(), Y.ravel()])
+    values = np.vstack([l2_arr, l3_arr])
+    kernel = stat.gaussian_kde(values,bw_method=0.2)
+    Z = np.reshape(kernel(positions).T, X.shape)
+    Z = np.rot90(Z)    
+    Z_68 = (generate_Z_layer(0.68).astype(bool))
+    Z_rings = Z_68
+    Z_draw = Z*((~Z_rings).astype(int))    
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots()
+    ax.imshow(Z_draw, cmap=plt.cm.gist_earth_r, extent=[xmin, xmax, ymin, ymax])
+    # ax.scatter(l2_arr, l3_arr, s=0.4,c='#FFFFFF')
+    ax.set_xlim([1, 4])
+    ax.set_ylim([1, 3])
+    if is_draw_all:
+        ax.set_title(f'{title_high_prop} Confs, all confs, {title_not_reverse} {is_containing_stack.sum()} pts')
+        savefig_draw_num_stackings = 'All'
+    else:
+        ax.set_title(f'{title_high_prop}, Only confs w/ {title_not_reverse} {number_stack} stackings, {is_containing_stack.sum()} pts')
+        savefig_draw_num_stackings = number_stack
+    ax.xaxis.set_major_locator(plt.MultipleLocator(0.5))
+    ax.yaxis.set_major_locator(plt.MultipleLocator(0.5))
+    ax.xaxis.set_minor_locator(plt.MultipleLocator(0.1))
+    ax.yaxis.set_minor_locator(plt.MultipleLocator(0.1))
+    ax.tick_params(bottom=True,top=True,left=True,right=True,direction='in')
+    ax.tick_params(bottom=True,top=True,left=True,right=True,direction='in',which='minor')
+    plt.savefig(os.path.splitext(pj_path)[0]+'-Heatmap'+f'-{title_high_prop}'+f'-{title_not_reverse}{savefig_draw_num_stackings}'+'.png',dpi=400)    
+    return True
+
+def generate_Z_layer(prob,delta=0.05):
+    prob = 1-prob
+    Z_sum = np.sum(Z)
+    Z_thresholds_arr = np.linspace(np.min(Z),np.max(Z),1000)
+    Z_threshold = 0
+    for Z_th in Z_thresholds_arr:
+        if np.sum(Z*(Z>Z_th)) / Z_sum <= prob:
+            Z_threshold = Z_th
+            break
+    # Produce Z
+    Z_sub = Z*(Z>Z_threshold)
+    Z_sub_ring = Z_sub*(~(Z_sub>Z_threshold+delta))
+    return Z_sub_ring
+
 def ns_time_pa_plot(data_process_func, results, plot_confs, data, varname):
     '''
     Plot the value (patch angle vtime) vs. time plot of a single trajectory.
@@ -198,10 +307,7 @@ def ns_time_pa_plot(data_process_func, results, plot_confs, data, varname):
         path[3] = '_'.join(p)
         pj_path = '/'.join(path)
         with open(os.path.splitext(pj_path)[0]+'.stack','rb') as f:
-            if ns_struc['pj_flip']:
-                nonstacking_vtime_dic, stacking_vtime_dic = pickle.load(f)
-            else:
-                stacking_vtime_dic, nonstacking_vtime_dic = pickle.load(f)
+            nonstacking_vtime_dic, stacking_vtime_dic = pickle.load(f)
     # reading ends
     for i, ((ia1,ia2), ang_vtime_dic) in enumerate(var_dic.items()):
         # i: loop of arm patches.
