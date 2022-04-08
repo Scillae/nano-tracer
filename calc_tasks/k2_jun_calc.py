@@ -25,7 +25,7 @@ def k2_jun_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_inpu
         CoM_pos = np.zeros(3)
         base_cnt = 0
         center_ls = list(ns.center.values()) # center_ls: [center_base], len == 4*arm_num
-        center_ls.extend([base for arm in ns.arms.values() for base in arm.base_pairs[1]]) # -1 is center
+        center_ls.extend([base for arm in ns.arms.values() for base in arm.base_pairs[1]]) # 
         # CoM
         for base in center_ls:
             CoM_pos = np.add(CoM_pos, np.array(base.position))

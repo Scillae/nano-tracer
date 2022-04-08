@@ -12,6 +12,11 @@ class Base:
         self.velocity = velocity
         self.angular_velocity = angular_velocity
         self.strand_id = strand_id
+    
+    def set_position(self, position):
+        assert len(position) == 3
+        self.position = position
+        return self.position
 
     @staticmethod
     def parse_string(s):

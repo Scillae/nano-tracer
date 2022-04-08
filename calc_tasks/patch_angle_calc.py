@@ -42,10 +42,15 @@ def patch_angle_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys
             for idx_2 in range(idx_1+1, len(arms_idx)):
                 ia2 = arms_idx[idx_2]
                 arm2 = arms[ia2]
-                first_pair_a1 = arm1.base_pairs[1] # -1 is center
-                first_pair_a2 = arm2.base_pairs[1]
-                last_pair_a1 = arm1.base_pairs[dims_ls[0]] # tuples (s0[i],s1[i])
-                last_pair_a2 = arm2.base_pairs[dims_ls[0]]
+                first_pair_a1 = arm1.base_pairs[dims_ls[0]-2-10]
+                first_pair_a2 = arm2.base_pairs[dims_ls[0]-2-10]
+                last_pair_a1 = arm1.base_pairs[dims_ls[0]-2] # tuples (s0[i],s1[i])
+                last_pair_a2 = arm2.base_pairs[dims_ls[0]-2]
+                if dims_ls[0] < 13:
+                    first_pair_a1 = arm1.base_pairs[dims_ls[0]-10] # b-form DNA, loop length == 10
+                    first_pair_a2 = arm2.base_pairs[dims_ls[0]-10]
+                    last_pair_a1 = arm1.base_pairs[dims_ls[0]] # tuples (s0[i],s1[i])
+                    last_pair_a2 = arm2.base_pairs[dims_ls[0]]                    
                 base_ls = list(last_pair_a1)
                 base_ls.extend(last_pair_a2)
                 if len(set([base.strand_id for base in base_ls])) < 4:
@@ -220,8 +225,8 @@ def nanostar_vectorize(ns, dims_ls, sel_arm_id, arm_normalize, next_ns = None):
     if type(rot_mat) == bool: # bool: False
         return (False,False,False)
     for ia, arm in ns.arms.items():
-        end_base_pair = [base for base in arm.base_pairs[dims_ls[0]]] # -1 is center
-        start_base_pair = [base for base in arm.base_pairs[1]] # -1 is center
+        end_base_pair = [base for base in arm.base_pairs[dims_ls[0]]] # 
+        start_base_pair = [base for base in arm.base_pairs[1]] # 
         end_pos = (np.array(end_base_pair[1].position) - CoM + np.array(end_base_pair[0].position) - CoM)/2 # now in CoM coord TODO: confirm
         start_pos = (np.array(start_base_pair[1].position) - CoM + np.array(start_base_pair[0].position) - CoM)/2 # now in CoM coord
         vec = end_pos

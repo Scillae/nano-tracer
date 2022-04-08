@@ -23,9 +23,9 @@ def summ_plot_main():
     '''
     conf_suffix = '' # -jun_10
     dims_ls = [20, 2, 7]
-    conc_list = [0.05, 0.1, 0.3, 0.5] # 0.05, 0.1, 0.3, 0.5
-    temp_list = [20, 23, 27, 30, 40, 50] # 20, 23, 27, 30, 40, 50
-    arm_num_list=[3, 4, 5, 6] #3, 4, 5, 6
+    conc_list = [0.3] # 0.05, 0.1, 0.3, 0.5
+    temp_list = [30] # 20, 23, 27, 30, 40, 50
+    arm_num_list=[6] #3, 4, 5, 6
     task_list = ['Mean', 'ST Dev', 'Skewness'] # m1, std, m
     # customization of series ~ conc
     color_list = ['#4994FF','#E55050','#FCC555','#7AA77A'] # np.array((0.1, 0.2, 0.5)).reshape((1,3))  '#4994FF','#E55050','#FFF555','#7AA77A'
@@ -36,7 +36,7 @@ def summ_plot_main():
     # summ_plot_pa(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
     # summ_plot_k2(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
     # summ_plot_as(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)    
-    # summ_plot_pj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
+    summ_plot_pj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
     # summ_plot_kj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
     # summ_plot_rj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
     # summ_plot_js(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
@@ -57,7 +57,7 @@ def summ_plot_main_jun():
     dims_ls = [20,2,7]
     conc_list = [0.1, 0.5] # 0.1 , 0.5
     temp_list = [20 , 30] # 20 , 30
-    arm_num_list=[4] #3,4,5,6
+    arm_num_list=[3,4,5,6] #3,4,5,6
     task_list = ['Mean', 'ST Dev', 'Skewness'] # m1, std, m
     # customization of series ~ conc
     color_list = ['#4994FF','#E55050'] # np.array((0.1, 0.2, 0.5)).reshape((1,3))
@@ -65,10 +65,10 @@ def summ_plot_main_jun():
 
     jun_list = [0,1,2,5,10] #0,1,2,5,10
 
-    summ_plot_pa_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)   
+    # summ_plot_pa_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)   
     # summ_plot_k2_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
     # summ_plot_as_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
-    # summ_plot_pj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
+    summ_plot_pj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
     # summ_plot_kj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
     # summ_plot_rj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
     # summ_plot_js_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list)
@@ -275,13 +275,13 @@ def tmp_summ(var_ls, bin_num):
 
 def get_params(arm_num):
     if arm_num == 3:
-        ns_struc = {'#arm':3, 'pj_flip':True, 'linked_PA': [(0,1),(0,2),(1,2)], 'unlinked_PA': [], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+        ns_struc = {'#arm':3, 'linked_PA': [(0,1),(0,2),(1,2)], 'unlinked_PA': [], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     elif arm_num == 4:
-        ns_struc = {'#arm':4, 'pj_flip':False, 'linked_PA': [(0,1),(0,3),(1,2),(2,3)], 'unlinked_PA': [(0,2),(1,3)], 'pairing_linked':[((0,2),(1,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+        ns_struc = {'#arm':4, 'linked_PA': [(0,1),(0,3),(1,2),(2,3)], 'unlinked_PA': [(0,2),(1,3)], 'pairing_linked':[((0,2),(1,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     elif arm_num == 5:
-        ns_struc = {'#arm':5, 'pj_flip':True, 'linked_PA': [(0,1),(0,4),(1,2),(2,3),(3,4)], 'unlinked_PA': [(0,2),(0,3),(1,3),(1,4),(2,4)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+        ns_struc = {'#arm':5, 'linked_PA': [(0,1),(0,4),(1,2),(2,3),(3,4)], 'unlinked_PA': [(0,2),(0,3),(1,3),(1,4),(2,4)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     elif arm_num == 6:
-        ns_struc = {'#arm':6, 'pj_flip':True, 'linked_PA': [(0,1),(0,5),(1,2),(2,3),(3,4),(4,5)], 'unlinked_PA': [(0,2),(0,3),(0,3),(1,3),(1,4),(1,5),(2,4),(2,5),(3,5)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+        ns_struc = {'#arm':6, 'linked_PA': [(0,1),(0,5),(1,2),(2,3),(3,4),(4,5)], 'unlinked_PA': [(0,2),(0,3),(0,3),(1,3),(1,4),(1,5),(2,4),(2,5),(3,5)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     return ns_struc
 
 def moments_calc(n, var_ls):
@@ -297,8 +297,7 @@ def moments_calc(n, var_ls):
     m3_s = m3_c / (std**3) # 3rd standardized moment: skewness
     return n, m1, std, m3_s
 
-# jobs end
-
+# jobs end[]
 if __name__ == '__main__':
     summ_plot_main()
     summ_plot_main_jun()

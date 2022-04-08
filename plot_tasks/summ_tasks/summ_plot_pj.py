@@ -26,7 +26,7 @@ def summ_plot_pj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_
     Set varname and plot confs.
     Define special tasks to customize the plot.
     '''
-    assert len(conc_list) == len(color_list) == len(marker_list)
+    # assert len(conc_list) == len(color_list) == len(marker_list)
     varname = 'pj'
     #### plot confs ####    
     xlim = (15,55)

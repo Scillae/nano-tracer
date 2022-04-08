@@ -187,7 +187,7 @@ def ns_heatmap_k2_plot(data_process_func, results, plot_confs, data, varname):
     num_double_stacking = sum([1 if b == 2 else 0 for b in stacking_state_arr])
     is_high_prop_stacking = True if num_stacking/len(stacking_state_arr) > 0.122 else False
     # load data
-    lbd_axs_ls = k2_dict['axes']
+    lbd_axs_ls = var_dic['axes']
     lbd1_ls = []
     l2_ls = []
     l3_ls = []
@@ -199,19 +199,21 @@ def ns_heatmap_k2_plot(data_process_func, results, plot_confs, data, varname):
     l2_arr = np.array(l2_ls)
     l3_arr = np.array(l3_ls)
     if is_high_prop_stacking:
-        draw_k2_heatmap(is_high_prop_stacking, True, plotpath)
-        draw_k2_heatmap(is_high_prop_stacking, False, plotpath, number_stack=0)
-        draw_k2_heatmap(is_high_prop_stacking, False, plotpath, number_stack=1)
-        draw_k2_heatmap(is_high_prop_stacking, False, plotpath, number_stack=2)
-        draw_k2_heatmap(is_high_prop_stacking, False, plotpath, number_stack=0, is_reverse_select_number_stack=True)
+        draw_k2_heatmap(is_high_prop_stacking, True, l2_arr, l3_arr, stacking_vtime_dic, plotpath)
+        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, plotpath, number_stack=0)
+        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, plotpath, number_stack=1)
+        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, plotpath, number_stack=2)
+        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, plotpath, number_stack=0, is_reverse_select_number_stack=True)
     else:
-        draw_k2_heatmap(is_high_prop_stacking, True, plotpath)
+        draw_k2_heatmap(is_high_prop_stacking, True, l2_arr, l3_arr, stacking_vtime_dic, plotpath)
+        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, plotpath, number_stack=0)
     return True
 
-def draw_k2_heatmap(is_high_prop_stacking, is_draw_all, plotpath, number_stack = 2, is_reverse_select_number_stack = False):
+def draw_k2_heatmap(is_high_prop_stacking, is_draw_all, l2_arr, l3_arr, stack_dict, plotpath, number_stack = 2, is_reverse_select_number_stack = False):
     title_high_prop = 'Stacking' if is_high_prop_stacking else 'No-stacking'
     if is_draw_all:
-        is_containing_stack = np.array(stack_dict[(0,1)]['bool']) + np.array(stack_dict[(1,2)]['bool']) + np.array(stack_dict[(2,3)]['bool']) + np.array(stack_dict[(0,3)]['bool'])
+        # is_containing_stack = np.array(stack_dict[(0,1)]['bool']) + np.array(stack_dict[(1,2)]['bool']) + np.array(stack_dict[(2,3)]['bool']) + np.array(stack_dict[(0,3)]['bool']) # selecting w/ stacking
+        is_containing_stack = np.ones(len(stack_dict[(0,1)]['bool']),dtype=bool) # draw everything
     else:
         is_containing_stack = (np.array(stack_dict[(0,1)]['bool'],dtype=int) + np.array(stack_dict[(1,2)]['bool'],dtype=int) + np.array(stack_dict[(2,3)]['bool'],dtype=int) + np.array(stack_dict[(0,3)]['bool'],dtype=int))==number_stack
     l2_arr = l2_arr[5:-5]
@@ -235,7 +237,7 @@ def draw_k2_heatmap(is_high_prop_stacking, is_draw_all, plotpath, number_stack =
     kernel = stat.gaussian_kde(values,bw_method=0.2)
     Z = np.reshape(kernel(positions).T, X.shape)
     Z = np.rot90(Z)    
-    Z_68 = (generate_Z_layer(0.68).astype(bool))
+    Z_68 = (generate_Z_layer(Z,0.68).astype(bool))
     Z_rings = Z_68
     Z_draw = Z*((~Z_rings).astype(int))    
     import matplotlib.pyplot as plt
@@ -256,16 +258,16 @@ def draw_k2_heatmap(is_high_prop_stacking, is_draw_all, plotpath, number_stack =
     ax.yaxis.set_minor_locator(plt.MultipleLocator(0.1))
     ax.tick_params(bottom=True,top=True,left=True,right=True,direction='in')
     ax.tick_params(bottom=True,top=True,left=True,right=True,direction='in',which='minor')
-    plt.savefig(os.path.splitext(pj_path)[0]+'-Heatmap'+f'-{title_high_prop}'+f'-{title_not_reverse}{savefig_draw_num_stackings}'+'.png',dpi=400)    
+    plt.savefig(os.path.splitext(plotpath)[0]+'-Heatmap'+f'-{title_high_prop}'+f'-{title_not_reverse}{savefig_draw_num_stackings}'+'.png',dpi=400)    
     return True
 
-def generate_Z_layer(prob,delta=0.05):
+def generate_Z_layer(Z,prob,delta=0.05):
     prob = 1-prob
     Z_sum = np.sum(Z)
     Z_thresholds_arr = np.linspace(np.min(Z),np.max(Z),1000)
     Z_threshold = 0
     for Z_th in Z_thresholds_arr:
-        if np.sum(Z*(Z>Z_th)) / Z_sum <= prob:
+        if np.sum(Z*(Z>Z_th)) / Z_sum <= prob: # integral of values above Z_th drops to 1-prob
             Z_threshold = Z_th
             break
     # Produce Z
@@ -381,14 +383,17 @@ def ns_time_pa_plot(data_process_func, results, plot_confs, data, varname):
     # plotpath = plotpath.split('.')
     # plotpath[-2] = plotpath[-2]+'_vtime'
     # plotpath = '.'.join(plotpath)
-    stacking_count = counting_stacking(stacking_vtime_dic, ns_struc)
+    total_count = counting_stacking(stacking_vtime_dic, 100, True, False, ns_struc)
+    stacking_0_count = counting_stacking(stacking_vtime_dic, 0, False, False, ns_struc)
+    stacking_not0_count = counting_stacking(stacking_vtime_dic, 0, False, True, ns_struc)
+    stacking_1_count = counting_stacking(stacking_vtime_dic, 1, False, False, ns_struc)
+    stacking_2_count = counting_stacking(stacking_vtime_dic, 2, False, False, ns_struc)
+    stacking_3_count = counting_stacking(stacking_vtime_dic, 3, False, False, ns_struc)
+    plt.suptitle(f'Total:{total_count}, 0_stk:{stacking_0_count}, Not0_stk:{stacking_not0_count}, 1_stk: {stacking_1_count}, 2_stk: {stacking_2_count}, 3_stk: {stacking_3_count}')
     chkdir(os.path.dirname(plotpath))
     plt.savefig(plotpath,dpi=400)
      # plt.show()
     plt.close()
-    with open(os.path.splitext(plotpath)[0]+'.txt','w') as f:
-        f.write(str(stacking_count))
-        f.write('\n')  
     with open(os.path.splitext(plotpath)[0]+'.stack','wb') as f:
         # if varname == 'pj': # definition of stacking in pj is the reverse.varname
         #     pickle.dump((nonstacking_vtime_dic,stacking_vtime_dic), f)
@@ -410,7 +415,21 @@ def identifying_stacking(ang_runningavg, ang_runningstd, stacking_min_length, st
     return avg_running_is_stacking2, avg_running_is_nonstacking2
 
 
-def counting_stacking(stacking_vtime_dic, ns_struc):
+def counting_stacking(stack_dict, number_stack, is_count_all, is_reverse_select_number_stack, ns_struc):
+    if is_count_all:
+        # is_containing_stack = np.array(stack_dict[(0,1)]['bool']) + np.array(stack_dict[(1,2)]['bool']) + np.array(stack_dict[(2,3)]['bool']) + np.array(stack_dict[(0,3)]['bool']) # selecting w/ stacking
+        is_containing_stack_arr = np.ones(len(stack_dict[(0,1)]['bool']),dtype=bool) # draw everything
+    else:
+        is_containing_stack_arr = np.zeros(len(stack_dict[(0,1)]['bool']),dtype=int)
+        for iaidx in ns_struc['linked_PA']:
+            is_containing_stack_arr += np.array(stack_dict[iaidx]['bool'],dtype=int)
+        is_containing_stack_arr = is_containing_stack_arr == number_stack
+    if not is_reverse_select_number_stack:
+        return np.sum(is_containing_stack_arr)
+    else:
+        return np.sum(~is_containing_stack_arr)     
+
+
     stacking_result = {}
     # stacking in one series
     for iaidx in ns_struc['linked_PA']:
@@ -435,43 +454,81 @@ def get_params(arm_num):
     # nonstacking_vtime_dic = {} # only for PA! 
     # ns_struc = ns_struc_3arm if int(label[0]) == 3 else ns_struc_4arm if int(label[0]) == 4 else ns_struc_5arm if int(label[0]) == 5 else ns_struc_6arm if int(label[0]) == 6 else False   
     # PJ use only!
+    # if arm_num == 3:
+    #     time_window_width = 7 # 15
+    #     stacking_min_length = 10 # 4arm only!
+    #     stacking_crit_ang = 120 # 4arm only!
+    #     stacking_crit_rmsd = 9 # 4arm only!
+    #     nonstacking_min_length = 10 # 4arm only!
+    #     nonstacking_crit_ang = 105 # 4arm only!
+    #     nonstacking_crit_rmsd = 12 # 4arm only!
+    #     ns_struc = {'#arm':3, 'linked_PA': [(0,1),(0,2),(1,2)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+    # elif arm_num == 4:
+    #     time_window_width = 11 # 15
+    #     stacking_min_length = 1 # 4arm only!
+    #     stacking_crit_ang = 110 # 4arm only!
+    #     stacking_crit_rmsd = 13 # 4arm only!
+    #     nonstacking_min_length = 1 # 4arm only!
+    #     nonstacking_crit_ang = 65 # 4arm only!
+    #     nonstacking_crit_rmsd = 10 # 4arm only!
+    #     ns_struc = {'#arm':4, 'linked_PA': [(0,1),(0,3),(1,2),(2,3)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+    # elif arm_num == 5:
+    #     time_window_width = 11 # 15
+    #     stacking_min_length = 15 # 4arm only!
+    #     stacking_crit_ang = 145 # 4arm only! # should be 130?
+    #     stacking_crit_rmsd = 7 # 4arm only!
+    #     nonstacking_min_length = 15 # 4arm only!
+    #     nonstacking_crit_ang = 65 # 4arm only!
+    #     nonstacking_crit_rmsd = 10 # 4arm only!
+    #     ns_struc = {'#arm':5, 'linked_PA': [(0,1),(0,4),(1,2),(2,3),(3,4)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+    # elif arm_num == 6:
+    #     time_window_width = 11 # 15
+    #     stacking_min_length = 15 # 4arm only!
+    #     stacking_crit_ang = 110 # 4arm only!
+    #     stacking_crit_rmsd = 7 # 4arm only!
+    #     nonstacking_min_length = 15 # 4arm only!
+    #     nonstacking_crit_ang = 50 # 4arm only!
+    #     nonstacking_crit_rmsd = 10 # 4arm only!
+    #     ns_struc = {'#arm':6, 'linked_PA': [(0,1),(0,5),(1,2),(2,3),(3,4),(4,5)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+    # else:
+    #     assert 0==1
     if arm_num == 3:
-        time_window_width = 7 # 15
-        stacking_min_length = 10 # 4arm only!
-        stacking_crit_ang = 120 # 4arm only!
-        stacking_crit_rmsd = 9 # 4arm only!
-        nonstacking_min_length = 10 # 4arm only!
-        nonstacking_crit_ang = 105 # 4arm only!
-        nonstacking_crit_rmsd = 12 # 4arm only!
+        time_window_width = 11 # 15
+        stacking_min_length = 10 # 
+        stacking_crit_ang = 120 # 
+        stacking_crit_rmsd = 12 # 
+        nonstacking_min_length = 5 # 
+        nonstacking_crit_ang = 105 # 
+        nonstacking_crit_rmsd = 15 # 
         ns_struc = {'#arm':3, 'linked_PA': [(0,1),(0,2),(1,2)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     elif arm_num == 4:
         time_window_width = 11 # 15
-        stacking_min_length = 1 # 4arm only!
-        stacking_crit_ang = 110 # 4arm only!
-        stacking_crit_rmsd = 13 # 4arm only!
-        nonstacking_min_length = 1 # 4arm only!
-        nonstacking_crit_ang = 65 # 4arm only!
-        nonstacking_crit_rmsd = 10 # 4arm only!
+        stacking_min_length = 10 # 
+        stacking_crit_ang = 120 # 
+        stacking_crit_rmsd = 12 # 
+        nonstacking_min_length = 5 # 
+        nonstacking_crit_ang = 65 # 
+        nonstacking_crit_rmsd = 15 # 
         ns_struc = {'#arm':4, 'linked_PA': [(0,1),(0,3),(1,2),(2,3)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     elif arm_num == 5:
         time_window_width = 11 # 15
-        stacking_min_length = 15 # 4arm only!
-        stacking_crit_ang = 145 # 4arm only! # should be 130?
-        stacking_crit_rmsd = 7 # 4arm only!
-        nonstacking_min_length = 15 # 4arm only!
-        nonstacking_crit_ang = 65 # 4arm only!
-        nonstacking_crit_rmsd = 10 # 4arm only!
+        stacking_min_length = 10 # useful when CoM is at the center of PJ.
+        stacking_crit_ang = 120 #  # should be 130?
+        stacking_crit_rmsd = 12 # 
+        nonstacking_min_length = 5 # 
+        nonstacking_crit_ang = 65 # 
+        nonstacking_crit_rmsd = 15 # 
         ns_struc = {'#arm':5, 'linked_PA': [(0,1),(0,4),(1,2),(2,3),(3,4)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     elif arm_num == 6:
         time_window_width = 11 # 15
-        stacking_min_length = 15 # 4arm only!
-        stacking_crit_ang = 110 # 4arm only!
-        stacking_crit_rmsd = 7 # 4arm only!
-        nonstacking_min_length = 15 # 4arm only!
-        nonstacking_crit_ang = 50 # 4arm only!
-        nonstacking_crit_rmsd = 10 # 4arm only!
+        stacking_min_length = 10 # useful when CoM is at the center of PJ.
+        stacking_crit_ang = 120 # 
+        stacking_crit_rmsd = 12 # 
+        nonstacking_min_length = 5 # 
+        nonstacking_crit_ang = 50 # 
+        nonstacking_crit_rmsd = 15 # 
         ns_struc = {'#arm':6, 'linked_PA': [(0,1),(0,5),(1,2),(2,3),(3,4),(4,5)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     else:
-        assert 0==1
+        assert 0==1    
     assert time_window_width % 2 == 1 # must be odd
     return time_window_width, stacking_min_length, stacking_crit_ang, stacking_crit_rmsd, nonstacking_min_length, nonstacking_crit_ang, nonstacking_crit_rmsd, ns_struc

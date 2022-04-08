@@ -46,6 +46,7 @@ class NanoStar:
         return cen_dic
 
     def binding(self, strands_dic, dims_ls):
+        box_dim = np.array((36,36,36)) # set manually now. Readable after reconstruction.
         strand_id_idx = list(strands_dic.keys())
         # find 3' head of an arbitrary strand
         # len_arm, len_cen, len_end = dims_ls
@@ -56,7 +57,7 @@ class NanoStar:
         # strand_id_idx.remove(s0_i)
         # Noella: Questioned_sci(dic or list) - dict
         # s0_head = s0.base_sequence[0]
-        s0_head = list(s0.base_sequence.values())[0]
+        s0_head = list(s0.base_sequence.values())[dims_ls[0]//4] # no longer head, but the binding point near head.
         # pool all bases with their locations
         pool_base_ls = []
         for idx in strand_id_idx:
@@ -64,20 +65,71 @@ class NanoStar:
                 continue
             # Noella: Questioned_sci(dic or list) - dict
             # pool_base_ls.extend(list(strands_dic[idx].base_sequence))
-            pool_base_ls.extend(list(strands_dic[idx].base_sequence.values()))
+            pool_base_ls.extend([list(strands_dic[idx].base_sequence.values())[-1-dims_ls[2]-dims_ls[0]//4],list(strands_dic[idx].base_sequence.values())[dims_ls[2]+dims_ls[0]//4]]) # selecting the pairing node, no longer the whole strand. But Not Assuming Direction.
         # get the closest base
         min_dist = 1000000
-        min_loc = 0
-        for i in range(len(pool_base_ls)):
+        bind_base = None
+        for candidate_base in pool_base_ls:
             # Noella: Accepted_sci
             # using duplicate name `dist` is not recommended
             #   dist = dist(pool_base_ls[i].position,s0_head.position)
-            dis = dist(pool_base_ls[i].position,s0_head.position)
-            if dis < min_dist:
+            dis = dist(candidate_base.position,s0_head.position)
+            orient_dot = np.dot(np.array(s0_head.backbone),np.array(candidate_base.backbone))
+            if dis < min_dist and orient_dot < -0.7 and dis < 4:
                 min_dist = dis
-                min_loc = i
-        bind_base = pool_base_ls[min_loc]
-        # assert its relative location in the strand is len(strand) - len_end
+                bind_base = candidate_base
+        # assert bind_base is not None
+        if bind_base is None:
+            # select the very far one w/ backbone more negative as bind_base.
+            cand_base_ls = []
+            for bind_base in pool_base_ls:
+                dis_arr = np.array([dist(bind_base.position, base.position) if base is not bind_base else None for base in pool_base_ls])
+                dis_arr = dis_arr[dis_arr != np.array(None)]
+                if sum(dis_arr > 0.9*box_dim[0]) >= 6: # being far from at least 3 strands simultaneously
+                    cand_base_ls.append(bind_base)
+            orient_dot_arr = np.array([np.dot(np.array(s0_head.backbone),np.array(cand_base.backbone)) for cand_base in cand_base_ls])
+            bind_base = cand_base_ls[np.argmin(orient_dot_arr)] # the little angle between backbones is neglected. use np.abs to do the reflection.      
+        # check if periodic box condition correction should be applied.
+        test_length = 3 # adjust if arm is not long enough. direction: center?dedicated to current NS designs.
+        test_dist_ls = [dist(s0.base_sequence[s0_head.base_id-i].position, strands_dic[bind_base.strand_id].base_sequence[bind_base.base_id+i].position) for i in range(test_length)]
+        while any(test_dist_ls > 0.9*box_dim[0]): # move to 1 box away, still original position related to box. 0.9 as tolerance.
+            # Periodic box condition correction.
+            strands_dic = self.periodic_box_cond_correction(bind_base,pool_base_ls,strands_dic,box_dim)
+            # retry binding
+            #####
+            pool_base_ls = []
+            for idx in strand_id_idx:
+                if idx == s0.strand_id:
+                    continue
+                # Noella: Questioned_sci(dic or list) - dict
+                # pool_base_ls.extend(list(strands_dic[idx].base_sequence))
+                pool_base_ls.extend([list(strands_dic[idx].base_sequence.values())[-1-dims_ls[2]-dims_ls[0]//4],list(strands_dic[idx].base_sequence.values())[dims_ls[2]+dims_ls[0]//4]]) # selecting the pairing node, no longer the whole strand. But Not Assuming Direction.
+            # get the closest base
+            min_dist = 1000000
+            bind_base = None
+            for candidate_base in pool_base_ls:
+                # Noella: Accepted_sci
+                # using duplicate name `dist` is not recommended
+                #   dist = dist(pool_base_ls[i].position,s0_head.position)
+                dis = dist(candidate_base.position,s0_head.position)
+                orient_dot = np.dot(np.array(s0_head.backbone),np.array(candidate_base.backbone))
+                if dis < min_dist and orient_dot < -0.7 and dis < 4:
+                    min_dist = dis
+                    bind_base = candidate_base
+            # assert bind_base is not None
+            if bind_base is None:
+                # select the very far one w/ backbone more negative as bind_base.
+                cand_base_ls = []
+                for bind_base in pool_base_ls:
+                    dis_arr = np.array([dist(bind_base.position, base.position) if base is not bind_base else None for base in pool_base_ls])
+                    dis_arr = dis_arr[dis_arr != np.array(None)]
+                    if sum(dis_arr > 0.9*box_dim[0]) >= 6: # being far from at least 3 strands simultaneously
+                        cand_base_ls.append(bind_base)
+                orient_dot_arr = np.array([np.dot(np.array(s0_head.backbone),np.array(cand_base.backbone)) for cand_base in cand_base_ls])
+                bind_base = cand_base_ls[np.argmin(orient_dot_arr)] # the little angle between backbones is neglected. use np.abs to do the reflection.      
+            test_dist_ls = [dist(s0.base_sequence[s0_head.base_id-i].position, strands_dic[bind_base.strand_id].base_sequence[bind_base.base_id+i].position) for i in range(test_length)]
+            # PBCC again if still needed.
+            #####
         # construct arm
         s1 = strands_dic[bind_base.strand_id]
         arm_idx = 0
@@ -94,7 +146,7 @@ class NanoStar:
             strand_id_idx.remove(s0.strand_id)
             # Noella: Questioned_sci(dic or list) - dict
             # s0_head = s0.base_sequence[0]
-            s0_head = list(s0.base_sequence.values())[0]
+            s0_head = list(s0.base_sequence.values())[dims_ls[0]//4]
             pool_base_ls = []
             # Noella: Questioned_sci(why not using len(strands_dic)?)
             # We may need to break the loop if strand_id_idx == []
@@ -103,22 +155,130 @@ class NanoStar:
             for idx in strand_id_idx:
                 # Noella: Questioned_sci(dic or list) - dict
                 # pool_base_ls.extend(list(strands_dic[idx].base_sequence))
-                pool_base_ls.extend(list(strands_dic[idx].base_sequence.values()))
+                pool_base_ls.extend([list(strands_dic[idx].base_sequence.values())[-1-dims_ls[2]-dims_ls[0]//4],list(strands_dic[idx].base_sequence.values())[dims_ls[2]+dims_ls[0]//4]]) # selecting the pairing node, no longer the whole strand. But Not Assuming Direction.
+            # get the closest base
             min_dist = 1000000
-            min_loc = 0
-            for i in range(len(pool_base_ls)):
+            bind_base = None
+            for candidate_base in pool_base_ls:
                 # Noella: Accepted_sci
-                # duplicate name `dist`
-                dis = dist(pool_base_ls[i].position,s0_head.position)
-                if dis < min_dist:
+                # using duplicate name `dist` is not recommended
+                #   dist = dist(pool_base_ls[i].position,s0_head.position)
+                dis = dist(candidate_base.position,s0_head.position)
+                orient_dot = np.dot(np.array(s0_head.backbone),np.array(candidate_base.backbone))
+                if dis < min_dist and orient_dot < -0.7 and dis < 4:
                     min_dist = dis
-                    min_loc = i
-            bind_base = pool_base_ls[min_loc]
+                    bind_base = candidate_base
+            # assert bind_base is not None
+            if bind_base is None:
+                # select the very far one w/ backbone more negative as bind_base.
+                cand_base_ls = []
+                for bind_base in pool_base_ls:
+                    dis_arr = np.array([dist(bind_base.position, base.position) if base is not bind_base else None for base in pool_base_ls])
+                    dis_arr = dis_arr[dis_arr != np.array(None)]
+                    if sum(dis_arr > 0.9*box_dim[0]) >= 6: # being far from at least 3 strands simultaneously
+                        cand_base_ls.append(bind_base)
+                orient_dot_arr = np.array([np.dot(np.array(s0_head.backbone),np.array(cand_base.backbone)) for cand_base in cand_base_ls])
+                bind_base = cand_base_ls[np.argmin(orient_dot_arr)] # the little angle between backbones is neglected. use np.abs to do the reflection.      
+            # check if periodic box condition correction should be applied.
+            test_length = 3 # adjust if arm is not long enough. direction: center?dedicated to current NS designs.
+            test_dist_ls = [dist(s0.base_sequence[s0_head.base_id-i].position, strands_dic[bind_base.strand_id].base_sequence[bind_base.base_id+i].position) for i in range(test_length)]
+            while any(test_dist_ls > 0.9*box_dim[0]): # move to 1 box away, still original position related to box. 0.9 as tolerance.
+                # Periodic box condition correction.
+                strands_dic = self.periodic_box_cond_correction(bind_base,pool_base_ls,strands_dic,box_dim)
+                # retry binding
+                #####
+                pool_base_ls = []
+                for idx in strand_id_idx:
+                    if idx == s0.strand_id:
+                        continue
+                    # Noella: Questioned_sci(dic or list) - dict
+                    # pool_base_ls.extend(list(strands_dic[idx].base_sequence))
+                    pool_base_ls.extend([list(strands_dic[idx].base_sequence.values())[-1-dims_ls[2]-dims_ls[0]//4],list(strands_dic[idx].base_sequence.values())[dims_ls[2]+dims_ls[0]//4]]) # selecting the pairing node, no longer the whole strand. But Not Assuming Direction.
+                # get the closest base
+                min_dist = 1000000
+                bind_base = None
+                for candidate_base in pool_base_ls:
+                    # Noella: Accepted_sci
+                    # using duplicate name `dist` is not recommended
+                    #   dist = dist(pool_base_ls[i].position,s0_head.position)
+                    dis = dist(candidate_base.position,s0_head.position)
+                    orient_dot = np.dot(np.array(s0_head.backbone),np.array(candidate_base.backbone))
+                    if dis < min_dist and orient_dot < -0.7 and dis < 4:
+                        min_dist = dis
+                        bind_base = candidate_base
+                # assert bind_base is not None
+                if bind_base is None:
+                    # select the very far one w/ backbone more negative as bind_base.
+                    cand_base_ls = []
+                    for bind_base in pool_base_ls:
+                        dis_arr = np.array([dist(bind_base.position, base.position) if base is not bind_base else None for base in pool_base_ls])
+                        dis_arr = dis_arr[dis_arr != np.array(None)]
+                        if sum(dis_arr > 0.9*box_dim[0]) >= 6: # being far from at least 3 strands simultaneously
+                            cand_base_ls.append(bind_base)
+                    orient_dot_arr = np.array([np.dot(np.array(s0_head.backbone),np.array(cand_base.backbone)) for cand_base in cand_base_ls])
+                    bind_base = cand_base_ls[np.argmin(orient_dot_arr)] # the little angle between backbones is neglected. use np.abs to do the reflection.      
+                test_dist_ls = [dist(s0.base_sequence[s0_head.base_id-i].position, strands_dic[bind_base.strand_id].base_sequence[bind_base.base_id+i].position) for i in range(test_length)]
+                # PBCC again if still needed.
+                #####
             s1 = strands_dic[bind_base.strand_id]
             arm_idx += 1
             arm_dic[arm_idx] = Arm(arm_idx, dims_ls, s0.strand_id, {s0.strand_id:s0,s1.strand_id:s1})
             del strands_dic[s0.strand_id]
         return arm_dic
+
+    def periodic_box_cond_correction(self,bind_base,pool_base_ls,strands_dic,box_dim):
+        # Assumtions:
+        # 'intended diffusion across box' only acting on continuous part, likely a whole strand.
+        # 'intended diffusion across box' won't cast bases across box boundary.
+        # safety check: is_diffusion.
+        dis_arr = np.array([dist(bind_base.position, base.position) if base is not bind_base else None for base in pool_base_ls])
+        dis_arr = dis_arr[dis_arr != np.array(None)]
+        assert all(dis_arr > 5) # confirming diffused strand: all greater than 5 (empirical value, binding:1~3)
+        # PBCC
+        # for base in strands_dic[strand_id].base_sequence.values():
+        #     old_pos = np.array(base.position)
+        #     new_pos = (old_pos + box_dim) % box_dim
+        #     ret_pos = base.set_position(tuple(new_pos))
+        #     assert all(ret_pos == new_pos)
+        base = bind_base
+        old_pos = base.position
+        # traverse backward, skipping bind_base
+        while strands_dic[base.strand_id].base_sequence.get(base.prev_id) is not None and dist(old_pos,strands_dic[base.strand_id].base_sequence[base.prev_id].position) < 4:
+            base = strands_dic[base.strand_id].base_sequence[base.prev_id]
+            old_pos = np.array(base.position)
+            new_pos = (old_pos + box_dim) % box_dim
+            ret_pos = base.set_position(tuple(new_pos))
+            assert all(ret_pos == new_pos)
+            # fix self.strands as well
+            ret_pos = self.strands[base.strand_id].base_sequence[base.base_id].set_position(tuple(new_pos))
+            assert all(ret_pos == new_pos)
+        # modifying bind_base
+        base = bind_base
+        old_pos = base.position
+        new_pos = (old_pos + box_dim) % box_dim
+        ret_pos = base.set_position(tuple(new_pos))
+        assert all(ret_pos == new_pos)
+        ret_pos = self.strands[base.strand_id].base_sequence[base.base_id].set_position(tuple(new_pos))
+        assert all(ret_pos == new_pos)
+        # traverse forward, skipping bind_base
+        while strands_dic[base.strand_id].base_sequence.get(base.next_id) is not None and dist(old_pos,strands_dic[base.strand_id].base_sequence[base.next_id].position) < 4:
+            base = strands_dic[base.strand_id].base_sequence[base.next_id]
+            old_pos = np.array(base.position)
+            new_pos = (old_pos + box_dim) % box_dim
+            ret_pos = base.set_position(tuple(new_pos))
+            assert all(ret_pos == new_pos)
+            # fix self.strands as well
+            ret_pos = self.strands[base.strand_id].base_sequence[base.base_id].set_position(tuple(new_pos))
+            assert all(ret_pos == new_pos)
+        return strands_dic # bases not in the same strand may be close to each other!
+
+
+
+
+
+
+
+
         '''
         len_arm, len_cen, len_end = dims_ls
         len_tot = 2*len_arm + len_cen + len_end

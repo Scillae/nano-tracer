@@ -24,7 +24,7 @@ def patch_jun_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_i
     p_angs_vtime_dic = OrderedDict() #{t_stamp: angle_results_ls}
     for t_stamp, ns in ns_tm.time_capsule.items():
         center_ls = list(ns.center.values()) # center_ls: [center_base], len == 4*arm_num
-        center_ls.extend([base for arm in ns.arms.values() for base in arm.base_pairs[1]]) # -1 is center
+        center_ls.extend([base for arm in ns.arms.values() for base in arm.base_pairs[1]]) # 
         junction_pos = np.average(np.array([base.position for base in center_ls]), 0) # assuming mass of nucs are the same.
         arms_idx = list(ns.arms.keys())
         is_sharing_strand = True
@@ -34,7 +34,7 @@ def patch_jun_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_i
             for idx_2 in range(idx_1+1, len(arms_idx)):
                 ia2 = arms_idx[idx_2]
                 arm2 = ns.arms[ia2]
-                first_pair_a1 = arm1.base_pairs[1] # -1 is center
+                first_pair_a1 = arm1.base_pairs[1] # 
                 first_pair_a2 = arm2.base_pairs[1]
                 last_pair_a1 = arm1.base_pairs[dims_ls[0]] # tuples (s0[i],s1[i])
                 last_pair_a2 = arm2.base_pairs[dims_ls[0]]

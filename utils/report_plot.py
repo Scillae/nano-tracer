@@ -347,8 +347,8 @@ def nanostar_vectorize(ns, dims_ls, sel_arm_id, arm_normalize, next_ns = None):
     if type(rot_mat) == bool: # bool: False
         return (False,False,False)
     for ia, arm in ns.arms.items():
-        end_base_pair = [base for base in arm.base_pairs[dims_ls[0]]] # -1 is center
-        start_base_pair = [base for base in arm.base_pairs[1]] # -1 is center
+        end_base_pair = [base for base in arm.base_pairs[dims_ls[0]]] # 
+        start_base_pair = [base for base in arm.base_pairs[1]] # 
         end_pos = (np.array(end_base_pair[1].position) - CoM + np.array(end_base_pair[0].position) - CoM)/2 # now in CoM coord
         start_pos = (np.array(start_base_pair[1].position) - CoM + np.array(start_base_pair[0].position) - CoM)/2 # now in CoM coord
         vec = end_pos

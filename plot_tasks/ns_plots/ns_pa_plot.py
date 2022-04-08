@@ -43,6 +43,7 @@ def ns_pa_plot(single=True, arms=4, temp=30, conc=0.5, sp_suffix='', conf_suffix
     data = (arms, temp, conc, sp_suffix, conf_suffix, dims_ls)
     results = SL_ns(patch_angle_calc, data, varname)
     results_vtime = SL_ns(patch_angle_calc, data, varname, vtime=True)
+    # return (0,0,0)
     #### plot confs ####
     x_var = rf'Patch Angles ($^\circ$)'
     x_lim = (0,360)

@@ -39,7 +39,7 @@ def x20_star(path_top = 'data/6-arm-nanostar-starlike-412kInit.top', path_traj =
                         continue
                     arm2 = arms[ia2]
                     last_pair_a1 = arm1.base_pairs[dims_ls[0]] # tuples (s0[i],s1[i])
-                    last_pair_a2 = arm2.base_pairs[dims_ls[0]] # -1 is center
+                    last_pair_a2 = arm2.base_pairs[dims_ls[0]] # 
                     base_ls = list(last_pair_a1)
                     base_ls.extend(last_pair_a2)
                     # Noella: Questioned_sci(dic or list); Other implementation is wrong: set()
