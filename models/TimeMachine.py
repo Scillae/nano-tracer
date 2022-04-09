@@ -12,6 +12,7 @@ class TimeMachine:
         self.cache_reader = None
         self.mode = ''
         self.time_capsule = OrderedDict()
+        self.box_dim = None # box_dim hacking
             
     # def save(self):
     #   if self.cache_writer is not None:

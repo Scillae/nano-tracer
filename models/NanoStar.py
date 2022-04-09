@@ -9,7 +9,7 @@ def dist(t1, t2):
     return np.sqrt(np.sum(np.square(np.array(t1) - np.array(t2))))
 
 class NanoStar:
-    def __init__(self, strands_dic, dims_ls, arm_num):
+    def __init__(self, strands_dic, dims_ls, arm_num, box_dim = None): # box_dim hacking
         # revert all strands: done in TimeMachine.add_strands
         # strands_dic = OrderedDict()
         # sanity check of strand amount
@@ -25,8 +25,9 @@ class NanoStar:
             strands_dic[strand_id] = Strand(strand_id, base_seq_r_ls)
         '''
         self.strands = strands_dic
-        self.center = self.center_gen(strands, dims_ls)
-        self.arms = self.binding(strands, dims_ls)
+        self.arms = self.binding(strands, dims_ls, box_dim)
+        self.center = self.center_gen(strands, dims_ls) # PBCC performed in self.binding, so self.center must goes afterwards
+        self.box_dim = box_dim
 
     def center_gen(self, strands_dic, dims_ls):
         len_arm, len_cen, len_end = dims_ls
@@ -45,8 +46,8 @@ class NanoStar:
             st += 1
         return cen_dic
 
-    def binding(self, strands_dic, dims_ls):
-        box_dim = np.array((36,36,36)) # set manually now. Readable after reconstruction.
+    def binding(self, strands_dic, dims_ls, box_dim):
+        # box_dim = np.array((36,36,36)) # set manually now. Readable after reconstruction.
         strand_id_idx = list(strands_dic.keys())
         # find 3' head of an arbitrary strand
         # len_arm, len_cen, len_end = dims_ls
@@ -96,7 +97,9 @@ class NanoStar:
             # Periodic box condition correction.
             strands_dic = self.periodic_box_cond_correction(bind_base,pool_base_ls,strands_dic,box_dim)
             # retry binding
-            #####
+            ##### # reset position of s0_head
+            s0_head = strands_dic[s0_head.strand_id].base_sequence[s0_head.base_id]
+            assert s0_head.position == self.strands[s0_head.strand_id].base_sequence[s0_head.base_id].position
             pool_base_ls = []
             for idx in strand_id_idx:
                 if idx == s0.strand_id:
@@ -186,7 +189,9 @@ class NanoStar:
                 # Periodic box condition correction.
                 strands_dic = self.periodic_box_cond_correction(bind_base,pool_base_ls,strands_dic,box_dim)
                 # retry binding
-                #####
+                ##### # reset position of s0_head
+                s0_head = strands_dic[s0_head.strand_id].base_sequence[s0_head.base_id]
+                assert s0_head.position == self.strands[s0_head.strand_id].base_sequence[s0_head.base_id].position
                 pool_base_ls = []
                 for idx in strand_id_idx:
                     if idx == s0.strand_id:
@@ -237,25 +242,16 @@ class NanoStar:
         # PBCC
         # for base in strands_dic[strand_id].base_sequence.values():
         #     old_pos = np.array(base.position)
-        #     new_pos = (old_pos + box_dim) % box_dim
+        #     new_pos = ((old_pos % box_dim) + box_dim) % box_dim 
         #     ret_pos = base.set_position(tuple(new_pos))
         #     assert all(ret_pos == new_pos)
-        # Lazy box-centering: only enabled when PBCCing. Consider making it global?
-        for strand in strands_dic.values():
-            for base in strand.base_sequence.values():
-                old_pos = np.array(base.position)
-                new_pos = old_pos - box_dim/2 # sth
-                ret_pos = base.set_position(tuple(new_pos))
-                assert all(ret_pos == new_pos)
-                ret_pos = self.strands[base.strand_id].base_sequence[base.base_id].set_position(tuple(new_pos))
-                assert all(ret_pos == new_pos)
         base = bind_base
         old_pos = base.position
         # traverse backward, skipping bind_base
         while strands_dic[base.strand_id].base_sequence.get(base.prev_id) is not None and dist(old_pos,strands_dic[base.strand_id].base_sequence[base.prev_id].position) < 4:
             base = strands_dic[base.strand_id].base_sequence[base.prev_id]
             old_pos = np.array(base.position)
-            new_pos = (old_pos + box_dim) % box_dim
+            new_pos = ((old_pos % box_dim) + box_dim) % box_dim # NOT equavalent to (old_pos + box_dim) % box_dim
             ret_pos = base.set_position(tuple(new_pos))
             assert all(ret_pos == new_pos)
             # fix self.strands as well
@@ -264,7 +260,7 @@ class NanoStar:
         # modifying bind_base
         base = bind_base
         old_pos = base.position
-        new_pos = (old_pos + box_dim) % box_dim
+        new_pos = ((old_pos % box_dim) + box_dim) % box_dim 
         ret_pos = base.set_position(tuple(new_pos))
         assert all(ret_pos == new_pos)
         ret_pos = self.strands[base.strand_id].base_sequence[base.base_id].set_position(tuple(new_pos))
@@ -273,15 +269,36 @@ class NanoStar:
         while strands_dic[base.strand_id].base_sequence.get(base.next_id) is not None and dist(old_pos,strands_dic[base.strand_id].base_sequence[base.next_id].position) < 4:
             base = strands_dic[base.strand_id].base_sequence[base.next_id]
             old_pos = np.array(base.position)
-            new_pos = (old_pos + box_dim) % box_dim
+            new_pos = ((old_pos % box_dim) + box_dim) % box_dim 
             ret_pos = base.set_position(tuple(new_pos))
             assert all(ret_pos == new_pos)
             # fix self.strands as well
             ret_pos = self.strands[base.strand_id].base_sequence[base.base_id].set_position(tuple(new_pos))
             assert all(ret_pos == new_pos)
-        return strands_dic # bases not in the same strand may be close to each other!
+        return strands_dic
+        # return self.pbc_CoM_centering(strands_dic,box_dim) # bases not in the same strand may be close to each other!
 
-
+    def pbc_CoM_centering(self,strands_dic,box_dim):
+        # Lazy box-centering: only enabled when PBCCing. Consider making it global?
+        # Assuming PBC-centering unrelated to PBCC. Perform after PBCC.
+        # CoM
+        CoM_pos = np.zeros(3)
+        base_cnt = 0
+        for strand in strands_dic.values():
+            for base in strand.base_sequence.values():
+                CoM_pos = np.add(CoM_pos, np.array(base.position))
+                base_cnt += 1
+        CoM_pos = np.divide(CoM_pos, base_cnt)
+        # PBC & CoM centering
+        for strand in strands_dic.values(): 
+            for base in strand.base_sequence.values():
+                old_pos = np.array(base.position)
+                new_pos = old_pos - CoM_pos + box_dim/2 # old_pos - CoM_pos = r_CoM. shift to mid-box afterward.
+                ret_pos = base.set_position(tuple(new_pos))
+                assert all(ret_pos == new_pos)
+                ret_pos = self.strands[base.strand_id].base_sequence[base.base_id].set_position(tuple(new_pos))
+                assert all(ret_pos == new_pos)
+        return strands_dic
 
 
 
