@@ -233,13 +233,22 @@ class NanoStar:
         # safety check: is_diffusion.
         dis_arr = np.array([dist(bind_base.position, base.position) if base is not bind_base else None for base in pool_base_ls])
         dis_arr = dis_arr[dis_arr != np.array(None)]
-        assert all(dis_arr > 5) # confirming diffused strand: all greater than 5 (empirical value, binding:1~3)
+        assert all(dis_arr > 4) # confirming diffused strand: all greater than 5 (empirical value, binding:1~3)
         # PBCC
         # for base in strands_dic[strand_id].base_sequence.values():
         #     old_pos = np.array(base.position)
         #     new_pos = (old_pos + box_dim) % box_dim
         #     ret_pos = base.set_position(tuple(new_pos))
         #     assert all(ret_pos == new_pos)
+        # Lazy box-centering: only enabled when PBCCing. Consider making it global?
+        for strand in strands_dic.values():
+            for base in strand.base_sequence.values():
+                old_pos = np.array(base.position)
+                new_pos = old_pos - box_dim/2 # sth
+                ret_pos = base.set_position(tuple(new_pos))
+                assert all(ret_pos == new_pos)
+                ret_pos = self.strands[base.strand_id].base_sequence[base.base_id].set_position(tuple(new_pos))
+                assert all(ret_pos == new_pos)
         base = bind_base
         old_pos = base.position
         # traverse backward, skipping bind_base
