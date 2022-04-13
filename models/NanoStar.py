@@ -168,9 +168,10 @@ class NanoStar:
             orient_dot = np.dot(np.array(s0_head.backbone),np.array(candidate_base.backbone))
             direction = np.array(candidate_base.position) - np.array(s0_head.position)
             direction_dot = np.dot(direction/np.linalg.norm(direction),s0_head.backbone) # check if candidate locates near the direction that s0_head's backbone vector points at.
-            if dis < min_dist and orient_dot < -0.7 and dis < 4 and direction_dot > 0.7:
+            if dis < min_dist and orient_dot < 0 and dis < 4 and direction_dot > 0: # and orient_dot < -0.7 and dis < 4 and direction_dot > 0.7
                 min_dist = dis
                 bind_base = candidate_base
+        assert bind_base is not None
         # if bind_base is None:
         #     # select the very far one w/ backbone more negative as bind_base.
         #     cand_base_ls = []

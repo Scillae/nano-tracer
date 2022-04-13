@@ -9,23 +9,60 @@ def k2_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_input = 
         strands_tm = reader.read_data(p=sys_input)
     else:
         strands_tm = reader.read_data(obj=sys_input)
+    # load ns because PBCC is done in NS
+    # savepoint loading: nano-stars
+    nc = NanoConstructor(strands_tm, dims_ls, arm_num)
+    if type(ns_input) is str or ns_input == None: 
+        # box_dim hacking
+        import re
+        with open(path_traj,'r') as f:
+            f.readline()
+            ret=re.match('^b = ([0-9]+) ([0-9]+) ([0-9]+)\n',f.readline())
+        box_dim = np.array((ret.group(1),ret.group(2),ret.group(3)))
+        ns_tm = nc.construct(p=ns_input, box_dim=box_dim)
+    else:
+        ns_tm = nc.construct(obj=ns_input)
+    # finish savepoint loading
 
-    # # Noella: Accepted_sci
-    # nc = NanoConstructor(strands_tm, dims_ls)
-    # ns_tm = nc.construct()
+    # # # Noella: Accepted_sci
+    # # nc = NanoConstructor(strands_tm, dims_ls)
+    # # ns_tm = nc.construct()
+    # k2_ls = []  # [(t_stamp, k2_val)]
+    # # for t_stamp, ns in ns_tm.time_capsule.items():
+    # for t_stamp, strands in strands_tm.time_capsule.items():
+    #     i_arr33 = np.zeros((3,3))
+    #     CoM_pos = np.zeros(3)
+    #     base_cnt = 0
+    #     # CoM
+    #     for strand in strands.values():
+    #         for base in strand.base_sequence.values():
+    #             CoM_pos = np.add(CoM_pos, np.array(base.position))
+    #             base_cnt += 1
+    #     CoM_pos = np.divide(CoM_pos, base_cnt)
+    #     for strand in strands.values():
+    #         for base in strand.base_sequence.values():
+    #             x, y, z = base.position - CoM_pos
+    #             i_arr33[0][0] += (y**2 + z**2)*m
+    #             i_arr33[1][1] += (x**2 + z**2)*m
+    #             i_arr33[2][2] += (y**2 + x**2)*m
+    #             i_arr33[0][1] += -x*y*m
+    #             i_arr33[1][0] += -x*y*m
+    #             i_arr33[0][2] += -x*z*m
+    #             i_arr33[2][0] += -x*z*m
+    #             i_arr33[1][2] += -z*y*m
+    #             i_arr33[2][1] += -z*y*m
     k2_ls = []  # [(t_stamp, k2_val)]
-    # for t_stamp, ns in ns_tm.time_capsule.items():
-    for t_stamp, strands in strands_tm.time_capsule.items():
+    for t_stamp, ns in ns_tm.time_capsule.items():
         i_arr33 = np.zeros((3,3))
         CoM_pos = np.zeros(3)
         base_cnt = 0
         # CoM
-        for strand in strands.values():
+        for strand in ns.strands.values():
             for base in strand.base_sequence.values():
                 CoM_pos = np.add(CoM_pos, np.array(base.position))
                 base_cnt += 1
         CoM_pos = np.divide(CoM_pos, base_cnt)
-        for strand in strands.values():
+        for strand in ns.strands.values():
             for base in strand.base_sequence.values():
                 x, y, z = base.position - CoM_pos
                 i_arr33[0][0] += (y**2 + z**2)*m

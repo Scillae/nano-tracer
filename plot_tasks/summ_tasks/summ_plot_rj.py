@@ -12,7 +12,7 @@ import os.path
 #     return axs
 
 
-def summ_plot_rj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list):
+def summ_plot_rj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix=''):
     '''
     Summary plot (design fixed) of radius of gyration of junction: RMS distance of all central bases (paired+unpaired).
     Set varname and plot confs.
@@ -28,11 +28,11 @@ def summ_plot_rj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_
     y_var = 'R of Gyr of the Junction (nm)'
     #### conf ends ####
     plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)
-    data = conf_suffix, dims_ls, conc_list, temp_list, arm_num_list
+    data = conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, sp_suffix
     # load data
     summary_dic, savepath = SL(ns_rj_plot, data, varname)
     # plot
-    plt = summ_plot(summary_dic, plot_confs, data, task_list, color_list, marker_list)
+    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix=''
     chkdir(os.path.dirname(f'{savepath}-{varname}.png'))
     plt.savefig(f'{savepath}-{varname}.png',dpi=500)
     plt.clf()

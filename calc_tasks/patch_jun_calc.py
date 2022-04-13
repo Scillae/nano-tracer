@@ -9,11 +9,11 @@ def patch_jun_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys_i
     # savepoint loading: strands-sys
     reader = Reader(path_top, path_traj)
     if type(sys_input) is str or sys_input == None:
-        strands_dic = reader.read_data(p=sys_input)
+        strands_tm = reader.read_data(p=sys_input)
     else:
-        strands_dic = reader.read_data(obj=sys_input)
+        strands_tm = reader.read_data(obj=sys_input)
     # savepoint loading: nano-stars
-    nc = NanoConstructor(strands_dic, dims_ls, arm_num)
+    nc = NanoConstructor(strands_tm, dims_ls, arm_num)
     if type(ns_input) is str or ns_input == None: 
         # box_dim hacking
         import re

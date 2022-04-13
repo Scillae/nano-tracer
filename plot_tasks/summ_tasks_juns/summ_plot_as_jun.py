@@ -4,7 +4,7 @@ from plot_tasks.ns_plots.ns_as_plot import ns_as_plot
 import os.path
 
 
-def summ_plot_as_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list):
+def summ_plot_as_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix=''):
     '''
     Summary plot (#unpaired at junction varied) of arm stiffness.
     AS == 0: straight. AS == 1: 180°
@@ -21,7 +21,7 @@ def summ_plot_as_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task
     y_var = 'Arm Stiffnesses'
     #### conf ends ####
     # packing
-    data = (jun_list, dims_ls, temp_list, arm_num_list)
+    data = (jun_list, dims_ls, temp_list, arm_num_list, sp_suffix)
     plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)
     # load
     jun_summ_dic, savepath = SL_jun(ns_as_plot, data, conc_list, varname)

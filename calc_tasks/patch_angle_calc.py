@@ -18,17 +18,17 @@ def patch_angle_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys
     # savepoint loading: strands-sys
     reader = Reader(path_top, path_traj)
     if type(sys_input) is str or sys_input == None:
-        strands_dic = reader.read_data(p=sys_input)
+        strands_tm = reader.read_data(p=sys_input)
     else:
-        strands_dic = reader.read_data(obj=sys_input)
+        strands_tm = reader.read_data(obj=sys_input)
     # savepoint loading: nano-stars
-    nc = NanoConstructor(strands_dic, dims_ls, arm_num)
+    nc = NanoConstructor(strands_tm, dims_ls, arm_num)
     if type(ns_input) is str or ns_input == None: 
         # box_dim hacking
         import re
         with open(path_traj,'r') as f:
             f.readline()
-            ret=re.match('^b = ([0-9]+) ([0-9]+) ([0-9]+)\n',r)
+            ret=re.match('^b = ([0-9]+) ([0-9]+) ([0-9]+)\n',f.readline())
         box_dim = np.array((ret.group(1),ret.group(2),ret.group(3)))
         ns_tm = nc.construct(p=ns_input, box_dim=box_dim)
     else:

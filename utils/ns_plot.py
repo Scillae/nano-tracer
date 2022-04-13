@@ -188,36 +188,40 @@ def ns_heatmap_k2_plot(data_process_func, results, plot_confs, data, varname):
     is_high_prop_stacking = True if num_stacking/len(stacking_state_arr) > 0.122 else False
     # load data
     lbd_axs_ls = var_dic['axes']
-    lbd1_ls = []
-    l2_ls = []
-    l3_ls = []
-    for conf_lbd in lbd_axs_ls:
-        (lbd1,axs1),(lbd2,axs2),(lbd3,axs3) = conf_lbd
-        lbd1_ls.append(lbd1)
-        l2_ls.append(lbd2/lbd1)
-        l3_ls.append(lbd3/lbd2)
+    lbd1_ls = [conf_lbd[0][0] for conf_lbd in lbd_axs_ls]
+    l2_ls = [conf_lbd[1][0]/conf_lbd[0][0] for conf_lbd in lbd_axs_ls]
+    l3_ls = [conf_lbd[2][0]/conf_lbd[1][0] for conf_lbd in lbd_axs_ls]
+    # for conf_lbd in lbd_axs_ls:
+    #     (lbd1,axs1),(lbd2,axs2),(lbd3,axs3) = conf_lbd
+    #     lbd1_ls.append(lbd1)
+    #     l2_ls.append(lbd2/lbd1)
+    #     l3_ls.append(lbd3/lbd2)
     l2_arr = np.array(l2_ls)
     l3_arr = np.array(l3_ls)
     if is_high_prop_stacking:
-        draw_k2_heatmap(is_high_prop_stacking, True, l2_arr, l3_arr, stacking_vtime_dic, plotpath)
-        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, plotpath, number_stack=0)
-        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, plotpath, number_stack=1)
-        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, plotpath, number_stack=2)
-        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, plotpath, number_stack=0, is_reverse_select_number_stack=True)
+        draw_k2_heatmap(is_high_prop_stacking, True, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath)
+        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=0)
+        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=1)
+        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=2)
+        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=0, is_reverse_select_number_stack=True)
     else:
-        draw_k2_heatmap(is_high_prop_stacking, True, l2_arr, l3_arr, stacking_vtime_dic, plotpath)
-        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, plotpath, number_stack=0)
+        draw_k2_heatmap(is_high_prop_stacking, True, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath)
+        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=0)
     return True
 
-def draw_k2_heatmap(is_high_prop_stacking, is_draw_all, l2_arr, l3_arr, stack_dict, plotpath, number_stack = 2, is_reverse_select_number_stack = False):
+def draw_k2_heatmap(is_high_prop_stacking, is_draw_all, l2_arr, l3_arr, stack_dict, ns_struc, plotpath, number_stack = 2, is_reverse_select_number_stack = False):
     title_high_prop = 'Stacking' if is_high_prop_stacking else 'No-stacking'
     if is_draw_all:
-        # is_containing_stack = np.array(stack_dict[(0,1)]['bool']) + np.array(stack_dict[(1,2)]['bool']) + np.array(stack_dict[(2,3)]['bool']) + np.array(stack_dict[(0,3)]['bool']) # selecting w/ stacking
         is_containing_stack = np.ones(len(stack_dict[(0,1)]['bool']),dtype=bool) # draw everything
     else:
-        is_containing_stack = (np.array(stack_dict[(0,1)]['bool'],dtype=int) + np.array(stack_dict[(1,2)]['bool'],dtype=int) + np.array(stack_dict[(2,3)]['bool'],dtype=int) + np.array(stack_dict[(0,3)]['bool'],dtype=int))==number_stack
-    l2_arr = l2_arr[5:-5]
-    l3_arr = l3_arr[5:-5]
+        is_containing_stack = np.zeros(len(stack_dict[(0,1)]['bool']),dtype=int)
+        for arm_idx in ns_struc['linked_PA']:
+            is_containing_stack += np.array(stack_dict[arm_idx]['bool'],dtype=int)
+        is_containing_stack = (is_containing_stack==number_stack)
+    # l2_arr = l2_arr[5:-5]
+    # l3_arr = l3_arr[5:-5]
+    is_containing_stack = np.append(is_containing_stack,[is_containing_stack[-1],is_containing_stack[-1],is_containing_stack[-1],is_containing_stack[-1],is_containing_stack[-1]])
+    is_containing_stack = np.insert(is_containing_stack,0,[is_containing_stack[0],is_containing_stack[0],is_containing_stack[0],is_containing_stack[0],is_containing_stack[0]])
     if not is_reverse_select_number_stack:
         l2_arr = l2_arr[is_containing_stack]
         l3_arr = l3_arr[is_containing_stack]
@@ -228,13 +232,23 @@ def draw_k2_heatmap(is_high_prop_stacking, is_draw_all, l2_arr, l3_arr, stack_di
         title_not_reverse = 'NOT'
     import scipy.stats as stat
     xmin = 1
-    xmax = 10
+    xmax = 3
     ymin = 1
-    ymax = 10
+    ymax = 2
     X, Y = np.mgrid[xmin:xmax:1000j, ymin:ymax:1000j]
     positions = np.vstack([X.ravel(), Y.ravel()])
     values = np.vstack([l2_arr, l3_arr])
-    kernel = stat.gaussian_kde(values,bw_method=0.2)
+    try:
+        kernel = stat.gaussian_kde(values,bw_method=0.2)
+    except:
+        if is_draw_all:
+            savefig_draw_num_stackings = 'All'
+        else:
+            savefig_draw_num_stackings = number_stack
+        f=open(os.path.splitext(plotpath)[0]+'-Heatmap'+f'-{title_high_prop}'+f'-{title_not_reverse}{savefig_draw_num_stackings}'+'.txt','w')
+        f.write("Woops! Singular matrix! Maybe too few points.")
+        f.close()
+        return False
     Z = np.reshape(kernel(positions).T, X.shape)
     Z = np.rot90(Z)    
     Z_68 = (generate_Z_layer(Z,0.68).astype(bool))
@@ -244,8 +258,8 @@ def draw_k2_heatmap(is_high_prop_stacking, is_draw_all, l2_arr, l3_arr, stack_di
     fig, ax = plt.subplots()
     ax.imshow(Z_draw, cmap=plt.cm.gist_earth_r, extent=[xmin, xmax, ymin, ymax])
     # ax.scatter(l2_arr, l3_arr, s=0.4,c='#FFFFFF')
-    ax.set_xlim([1, 4])
-    ax.set_ylim([1, 3])
+    ax.set_xlim([1, 3])
+    ax.set_ylim([1, 2])
     if is_draw_all:
         ax.set_title(f'{title_high_prop} Confs, all confs, {title_not_reverse} {is_containing_stack.sum()} pts')
         savefig_draw_num_stackings = 'All'
@@ -261,18 +275,21 @@ def draw_k2_heatmap(is_high_prop_stacking, is_draw_all, l2_arr, l3_arr, stack_di
     plt.savefig(os.path.splitext(plotpath)[0]+'-Heatmap'+f'-{title_high_prop}'+f'-{title_not_reverse}{savefig_draw_num_stackings}'+'.png',dpi=400)    
     return True
 
-def generate_Z_layer(Z,prob,delta=0.05):
-    prob = 1-prob
-    Z_sum = np.sum(Z)
-    Z_thresholds_arr = np.linspace(np.min(Z),np.max(Z),1000)
-    Z_threshold = 0
-    for Z_th in Z_thresholds_arr:
-        if np.sum(Z*(Z>Z_th)) / Z_sum <= prob: # integral of values above Z_th drops to 1-prob
-            Z_threshold = Z_th
-            break
+def generate_Z_layer(Z,prob,delta=0.05,is_FWHM=False):
+    if is_FWHM:
+        Z_threshold = (np.max(Z))/2 # delta at center now
+    else:
+        prob = 1-prob
+        Z_sum = np.sum(Z)
+        Z_thresholds_arr = np.linspace(np.min(Z),np.max(Z),1000)
+        Z_threshold = 0
+        for Z_th in Z_thresholds_arr:
+            if np.sum(Z*(Z>Z_th)) / Z_sum <= prob: # integral of values above Z_th drops to 1-prob
+                Z_threshold = Z_th
+                break
     # Produce Z
-    Z_sub = Z*(Z>Z_threshold)
-    Z_sub_ring = Z_sub*(~(Z_sub>Z_threshold+delta))
+    Z_sub = Z*(Z>Z_threshold-delta/2)
+    Z_sub_ring = Z_sub*(~(Z_sub>Z_threshold+delta/2))
     return Z_sub_ring
 
 def ns_time_pa_plot(data_process_func, results, plot_confs, data, varname):
