@@ -21,7 +21,7 @@ def SL(ns_func, data, varname):
     '''
     Save&Load for fixed design. Same as in the summary plot.
     '''
-    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list = data
+    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, sp_suffix = data
     savepath = f'summary/{arm_num_list}Arms{conf_suffix}/{temp_list}C-{conc_list}M'
     su_path = f'{savepath}-{varname}.sudic' # (p_angs_dic, ns_tm, ns_last, sys)
     su_dic_results = save_load(su_path, None)
@@ -39,7 +39,7 @@ def SL_jun(ns_func, data, conc_list, varname):
     '''
     Save&Load for varied designs. Same as in the summary plot.
     '''
-    jun_list, dims_ls, temp_list, arm_num_list = data
+    jun_list, dims_ls, temp_list, arm_num_list, sp_suffix = data
     # plot: conc ~ {x: jun_nums, y: summaries, series: temperature}
     # assume saved, read corr. dics
     jun_summ_dic = OrderedDict() # {jun:{(keys):(mn)}}
@@ -76,7 +76,7 @@ def pa_3d_report_plot(data):
     y_lim = (-1.2,1.2)
     z_lim = (-1.2,1.2)
     from utils.ns_plot import SL_ns
-    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list = data
+    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, sp_suffix = data
     color_list = ['#4994FF','#E55050','#FCC555','#7AA77A'] # blue, red, yellow, green
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d', xlim=x_lim, ylim=y_lim, zlim=z_lim)
@@ -378,7 +378,7 @@ def k2_report_plot(summary_dic, plot_confs, data, color_list, marker_list, speci
     msize_list = [9,6]
     ebsize_list = [8,5]
     xlim, ylim_avg, ylim_std, ylim_skw, y_var = plot_confs # unpack configurations
-    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list = data
+    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, sp_suffix = data
     # plot
     fig = plt.figure(figsize=(3*len(conc_list), 3*1+0.5)) # figsize=(3*len(conc_list), 3*1)
     fig.add_subplot(111, frameon=False)
@@ -541,7 +541,7 @@ def k2_report_plot_old(summary_dic, plot_confs, data, color_list, marker_list, s
     msize_list = [9,6]
     ebsize_list = [8,5]
     xlim, ylim_avg, ylim_std, ylim_skw, y_var = plot_confs # unpack configurations
-    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list = data
+    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, sp_suffix = data
     # plot
     fig = plt.figure(figsize=(3*len(conc_list), 3*1+0.5)) # figsize=(3*len(conc_list), 3*1)
     fig.add_subplot(111, frameon=False)
@@ -657,7 +657,7 @@ def k2_report_plot_seaborn(summary_dic, plot_confs, data, color_list, marker_lis
     msize_list = [9,6]
     ebsize_list = [8,5]
     xlim, ylim_avg, ylim_std, ylim_skw, y_var = plot_confs # unpack configurations
-    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list = data
+    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, sp_suffix = data
     # plot
     fig = plt.figure(figsize=(3*len(conc_list), 3*1+0.5)) # figsize=(3*len(conc_list), 3*1)
     fig.add_subplot(111, frameon=False)

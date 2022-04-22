@@ -5,7 +5,7 @@ import os.path
 
 
 # def special_tasks(axs, data, task_list):
-#     jun_list, dims_ls, temp_list, arm_num_list = data
+#     jun_list, dims_ls, temp_list, arm_num_list, sp_suffix = data
 #     # 1. a horizontal dashed line at 5/32 for all mean
 #     for i in range(len(arm_num_list)):
 #         axs[0,i].plot((-1,11), (5/32,5/32),c='#1AA555',ls=':')

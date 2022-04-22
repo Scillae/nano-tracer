@@ -42,7 +42,8 @@ class NanoStar:
                 # around lines: 31 44 48 68 71 (90) [may not be exactly because of new added comments lines]
                 # cen_dic[st*len_cen+i] = strand.base_sequence.values()[len_arm+i]
                 # dic or list: dict
-                cen_dic[st*len_cen+i] = list(strand.base_sequence.values())[len_arm+i]
+                sel_b = list(strand.base_sequence.values())[len_arm+i]
+                cen_dic[sel_b.base_id] = sel_b
             st += 1
         return cen_dic
 
@@ -121,7 +122,7 @@ class NanoStar:
         # return self.pbc_CoM_centering(strands_dic,box_dim) 
     
     def pairing_single_step(self, strand_id_idx, strands_dic, s0, box_dim, dims_ls, is_checking_pbcc):
-        binding_location = 4 # how far the binding location is from the end of arm.
+        binding_location = 4 # controlling how far the binding location is from the end of arm. (4:= quadrisection point. 2:= bisection point)
         if is_checking_pbcc:
             CoM_pos = self.get_CoM_pos()
             criteria = (dims_ls[0]+dims_ls[1])/(20-binding_location)*8.3*1.2 # 20 bp : ~8.3 SU. Setting tolerance as 20%

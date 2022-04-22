@@ -1,4 +1,4 @@
-from plot_tasks.summ_tasks import summ_plot_pa, summ_plot_k2, summ_plot_as, summ_plot_pj, summ_plot_kj, summ_plot_rj, summ_plot_js, summ_plot_pan, summ_plot_pjn
+from plot_tasks.summ_tasks import summ_plot_pa, summ_plot_k2, summ_plot_as, summ_plot_pj, summ_plot_kj, summ_plot_rj, summ_plot_js, summ_plot_pan, summ_plot_pjn, summ_plot_si
 from plot_tasks.summ_tasks_juns import summ_plot_pa_jun, summ_plot_k2_jun, summ_plot_as_jun, summ_plot_pj_jun, summ_plot_kj_jun, summ_plot_rj_jun, summ_plot_js_jun, summ_plot_pan_jun, summ_plot_pjn_jun
 # import numpy as np
 import numpy as np
@@ -34,6 +34,7 @@ def summ_plot_main():
     # if conf_suffix[:5] == '-jun_':
     #     dims_ls[1] = conf_suffix[-1]
 
+    summ_plot_si(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
     # summ_plot_pa(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
     # summ_plot_k2(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
     # summ_plot_as(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)    
@@ -70,7 +71,7 @@ def summ_plot_main_jun():
     # summ_plot_pa_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)   
     # summ_plot_k2_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
     # summ_plot_as_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    # summ_plot_pj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
+    summ_plot_pj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
     # summ_plot_kj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
     # summ_plot_rj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
     # summ_plot_js_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
@@ -78,6 +79,20 @@ def summ_plot_main_jun():
     # summ_plot_pjn_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
     return True
 
+
+# jobs end[]
+if __name__ == '__main__':
+    summ_plot_main()
+    # summ_plot_main_jun()
+    # misc()
+    # debug_ns_arm_examine()
+    # debug_pairing()
+    # report_plot()
+    print('DONE')
+
+
+'''
+0412 Finding the best conformation
 def misc():
     plot_summ_dic = {}
     arm_list = [3,4,5,6]
@@ -287,9 +302,9 @@ def get_params(arm_num):
     return ns_struc
 
 def moments_calc(n, var_ls):
-    '''
+    ''
     Calculate the 0th raw, 1st raw, 2nd central, and 3rd standardized moment of a given distribution.
-    '''
+    ''
     n = np.array(n)
     m0 = np.sum(n) # 0th unitless raw moment: integration
     m1 = np.sum(var_ls)/m0
@@ -299,18 +314,6 @@ def moments_calc(n, var_ls):
     m3_s = m3_c / (std**3) # 3rd standardized moment: skewness
     return n, m1, std, m3_s
 
-# jobs end[]
-if __name__ == '__main__':
-    summ_plot_main()
-    summ_plot_main_jun()
-    # misc()
-    # debug_ns_arm_examine()
-    # debug_pairing()
-    # report_plot()
-    print('DONE')
-
-
-'''
 03-06 3D plot of Arms in the coord of principal axes
 def misc():
     pa_r_vtime_dic, rot_mat_dic = ns_pa_r_summ()

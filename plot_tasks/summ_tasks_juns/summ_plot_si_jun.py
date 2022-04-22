@@ -1,37 +1,30 @@
 from utils.tools import chkdir
 from utils.summ_plot import summ_plot_jun, SL_jun
-from plot_tasks.ns_plots.ns_rj_plot import ns_rj_plot
+from plot_tasks.ns_plots.ns_si_plot import ns_si_plot
 import os.path
 
 
-# def special_tasks(axs, data, task_list):
-#     jun_list, dims_ls, temp_list, arm_num_list, sp_suffix = data
-#     # 1. a horizontal dashed line at 5/32 for all mean
-#     for i in range(len(arm_num_list)):
-#         axs[0,i].plot((-1,11), (5/32,5/32),c='#1AA555',ls=':')
-#     return axs
-
-def summ_plot_rj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix=''):
+def summ_plot_pa_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix=''):
     '''
-    Summary plot (#unpaired at junction varied) of radius of gyration of junction: RMS distance of all central bases (paired+unpaired).
+    Summary plot (#unpaired at junction varied) of ...
     Set varname and plot confs.
     Define special tasks to customize the plot.
     '''
-    assert len(color_list) == len(marker_list) == len(temp_list)
-    varname = 'rj'
+    # assert len(color_list) == len(marker_list) == len(temp_list)
+    varname = 'si'
     #### plot confs ####
     xlim = (-1, 11)
-    ylim_avg = (0, 4)
-    ylim_std = (0, 1)
-    ylim_skw = (-1, 0.5)
-    y_var = 'R of Gyr of the Junction (nm)'
+    ylim_avg = (60, 150)
+    ylim_std = (0, 90)
+    ylim_skw = (-1.3, 1.3)
+    y_var = 'Unavailable'
     plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)
     #### conf ends ####
     # packing
     data = (jun_list, dims_ls, temp_list, arm_num_list, sp_suffix)
     plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)
     # load
-    jun_summ_dic, savepath = SL_jun(ns_rj_plot, data, conc_list, varname)
+    jun_summ_dic, savepath = SL_jun(ns_si_plot, data, conc_list, varname)
     #### Plot Summaries ####
     # plot: conc ~ {x: jun_nums, y: summaries, series: temperature}
     # data: conc ~ temperature ~ (jun~summ)

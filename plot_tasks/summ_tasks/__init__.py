@@ -7,3 +7,4 @@ from plot_tasks.summ_tasks.summ_plot_rj import summ_plot_rj
 from plot_tasks.summ_tasks.summ_plot_js import summ_plot_js
 from plot_tasks.summ_tasks.summ_plot_pan import summ_plot_pan
 from plot_tasks.summ_tasks.summ_plot_pjn import summ_plot_pjn
+from plot_tasks.summ_tasks.summ_plot_si import summ_plot_si

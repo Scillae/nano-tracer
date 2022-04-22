@@ -5,7 +5,7 @@ import os.path
 
 
 def special_tasks(axs, data, task_list):
-    jun_list, dims_ls, temp_list, arm_num_list = data
+    jun_list, dims_ls, temp_list, arm_num_list, sp_suffix = data
     # 1. a horizontal dashed line at 109.5° for the 4 arm
     axs[0,0].plot((-1,11), (109.5,109.5),c='#1AA555',ls=':')
     # 2. one at 90° for the 6 arm patch angle plot. 

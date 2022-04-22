@@ -4,7 +4,7 @@ from plot_tasks.ns_plots.ns_pjn_plot import ns_pjn_plot
 import os.path
 
 def special_tasks(axs, data, task_list):
-    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list = data
+    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, sp_suffix = data
     # special tasks
     # 1. a horizontal dashed line at 109.5° for the 4 arm
     axs[0,0].plot((15,55), (109.5,109.5),c='#1AA555',ls=':')

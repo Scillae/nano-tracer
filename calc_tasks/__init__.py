@@ -6,3 +6,4 @@ from calc_tasks.patch_jun_calc import patch_jun_calc
 from calc_tasks.k2_jun_calc import k2_jun_calc
 from calc_tasks.RoG_jun_calc import RoG_jun_calc
 from calc_tasks.jun_shift_calc import jun_shift_calc
+from calc_tasks.stacking_local_identify_calc import stacking_local_identify_calc
