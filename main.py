@@ -1,5 +1,5 @@
 from plot_tasks.summ_tasks import summ_plot_pa, summ_plot_k2, summ_plot_as, summ_plot_pj, summ_plot_kj, summ_plot_rj, summ_plot_js, summ_plot_pan, summ_plot_pjn, summ_plot_si
-from plot_tasks.summ_tasks_juns import summ_plot_pa_jun, summ_plot_k2_jun, summ_plot_as_jun, summ_plot_pj_jun, summ_plot_kj_jun, summ_plot_rj_jun, summ_plot_js_jun, summ_plot_pan_jun, summ_plot_pjn_jun
+from plot_tasks.summ_tasks_juns import summ_plot_pa_jun, summ_plot_k2_jun, summ_plot_as_jun, summ_plot_pj_jun, summ_plot_kj_jun, summ_plot_rj_jun, summ_plot_js_jun, summ_plot_pan_jun, summ_plot_pjn_jun, summ_plot_si_jun
 # import numpy as np
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,10 +23,11 @@ def summ_plot_main():
     '''
     conf_suffix = '' # -jun_10
     sp_suffix = ''
+    flag_suffix = '-oxrna2'
     dims_ls = [20, 2, 7]
-    conc_list = [0.05, 0.1, 0.3, 0.5] # 0.05, 0.1, 0.3, 0.5
-    temp_list = [20, 23, 27, 30, 40, 50] # 20, 23, 27, 30, 40, 50
-    arm_num_list=[3, 4, 5, 6] #3, 4, 5, 6
+    conc_list = [0.5] # 0.05, 0.1, 0.3, 0.5
+    temp_list = [20] # 20, 23, 27, 30, 40, 50
+    arm_num_list=[4] #3, 4, 5, 6
     task_list = ['Mean', 'ST Dev', 'Skewness'] # m1, std, m
     # customization of series ~ conc
     color_list = ['#4994FF','#E55050','#FCC555','#7AA77A'] # np.array((0.1, 0.2, 0.5)).reshape((1,3))  '#4994FF','#E55050','#FFF555','#7AA77A'
@@ -34,16 +35,16 @@ def summ_plot_main():
     # if conf_suffix[:5] == '-jun_':
     #     dims_ls[1] = conf_suffix[-1]
 
-    summ_plot_si(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    # summ_plot_pa(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    # summ_plot_k2(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    # summ_plot_as(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)    
-    # summ_plot_pj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    # summ_plot_kj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    # summ_plot_rj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    # summ_plot_js(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    # summ_plot_pan(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    # summ_plot_pjn(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
+    # summ_plot_si(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    summ_plot_pa(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    # summ_plot_k2(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    # summ_plot_as(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)    
+    # summ_plot_pj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    # summ_plot_kj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    # summ_plot_rj(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    # summ_plot_js(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    # summ_plot_pan(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    # summ_plot_pjn(conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
     return True
 
 def summ_plot_main_jun():
@@ -57,8 +58,9 @@ def summ_plot_main_jun():
     '''
     conf_suffix = '' # -jun_10
     sp_suffix = ''
+    flag_suffix = ''
     dims_ls = [20,2,7]
-    conc_list = [0.1, 0.5] # 0.1 , 0.5
+    conc_list = [0.1 , 0.5] # 0.1 , 0.5
     temp_list = [20 , 30] # 20 , 30
     arm_num_list=[3,4,5,6] #3,4,5,6
     task_list = ['Mean', 'ST Dev', 'Skewness'] # m1, std, m
@@ -68,16 +70,270 @@ def summ_plot_main_jun():
 
     jun_list = [0,1,2,5,10] #0,1,2,5,10
 
-    # summ_plot_pa_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)   
-    # summ_plot_k2_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    # summ_plot_as_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    summ_plot_pj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    # summ_plot_kj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    # summ_plot_rj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    # summ_plot_js_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
-    # summ_plot_pan_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)   
-    # summ_plot_pjn_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix)
+    # summ_plot_si_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    # summ_plot_pa_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)   
+    summ_plot_k2_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    # summ_plot_as_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    # summ_plot_pj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    # summ_plot_kj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    # summ_plot_rj_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    # summ_plot_js_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
+    # summ_plot_pan_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)   
+    # summ_plot_pjn_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix, flag_suffix)
     return True
+
+# 0507 Prominent Conformation Selection
+def misc():
+    from joblib import Parallel, delayed
+    par_cond_list = []
+    summ_dic = {}
+    pop_summ_dic = obtain_population_stats()
+    arm_list = [3,4,5,6]
+    jun_list = [0,1,2,5,10]
+    for arm in arm_list:
+        for jun in jun_list:
+            if jun == 2:
+                conc_list = [0.05, 0.1, 0.3, 0.5] # 0.05, 0.1, 0.3, 0.5
+                temp_list = [20, 23, 27, 30, 40, 50] # 20, 23, 27, 30, 40, 50
+            else:
+                conc_list = [0.1,0.5] # 0.05, 0.1, 0.3, 0.5
+                temp_list = [20,30] # 20, 23, 27, 30, 40, 50
+            for temp in temp_list:
+                for conc in conc_list:
+                    if not (arm==4 and jun==0 and temp==30 and conc==0.1):
+                    # print(f'arm {arm} , jun {jun} , temp {temp} , conc {conc}')
+                    # summ_dic[(arm,jun,temp,conc)] = ns_prom_conf_sel(arm, jun, temp, conc, pop_summ_dic)
+                        par_cond_list.append((arm,jun,temp,conc))
+    r_ls = Parallel(n_jobs=12)(delayed(ns_prom_conf_sel)(arm, jun, temp, conc, pop_summ_dic[(arm,jun,temp,conc)]) for arm, jun, temp, conc in par_cond_list)
+    for cond, dic in r_ls:
+        summ_dic[cond] = dic
+    with open('tmp\\tmp_prom_sel_dict_FWHM_.tmp','wb') as f: # 68ptile
+        pickle.dump(summ_dic,f)
+    return
+
+def ns_prom_conf_sel(arm, jun, temp, conc, pop_dic): # pop_summ_dic
+    print(f'arm {arm} , jun {jun} , temp {temp} , conc {conc}')
+    nonstack_dict, stack_dict, pa_ls, k2_ls = load_data(arm, jun, temp, conc) # , ns
+    # re-organize
+    from plot_tasks.ns_plots.ns_k2_plot import data_process_func as process_k2
+    from plot_tasks.ns_plots.ns_pa_plot import data_process_func as process_pa
+    pa_dict = process_pa(pa_ls, None, True)
+    k2_dict = process_k2(k2_ls, None, True)
+    # prepare data
+    lbd_axs_ls = k2_dict['axes']
+    lbd1_ls = [conf_lbd[0][0] for conf_lbd in lbd_axs_ls]
+    l2_arr = np.array([conf_lbd[1][0]/conf_lbd[0][0] for conf_lbd in lbd_axs_ls])
+    l3_arr = np.array([conf_lbd[2][0]/conf_lbd[1][0] for conf_lbd in lbd_axs_ls])
+    # generate rings
+    import scipy.stats as stat
+    xmin = 1
+    xmax = 3
+    ymin = 1
+    ymax = 2
+    X, Y = np.mgrid[xmin:xmax:3000j, ymin:ymax:3000j]
+    positions = np.vstack([X.ravel(), Y.ravel()])
+    values = np.vstack([l2_arr, l3_arr])
+    kernel = stat.gaussian_kde(values,bw_method=0.2)
+    Z = np.reshape(kernel(positions).T, X.shape)
+    Z = np.rot90(Z)
+    X = np.rot90(X) # now: X[0,i]
+    Y = np.rot90(Y) # now: Y[j,0]    
+    # Z_base = (generate_Z_layer(Z,0.02).astype(bool))
+    # Z_50 = (generate_Z_layer(Z,0.50).astype(bool))
+    # Z_68 = (generate_Z_layer(Z,0.68).astype(bool))
+    # Z_95 = (generate_Z_layer(Z,0.95).astype(bool))
+    Z_FWHM = (generate_Z_layer(Z,0.68,is_FWHM=True).astype(bool)) # Z_FWHM is now not 68 %tile!
+    # select conformations within the ring(s)
+    conf_p_ls = [(l2_arr[i], l3_arr[i]) for i in range(len(l2_arr))]
+    i_in_ring = np.array([i for i, pos in enumerate(conf_p_ls) if check_if_in_ring(pos, Z_FWHM, X, Y)])
+    print(len(i_in_ring),'pts selected.')
+    # select the prominent conformation. UGLY!
+    is_pop_prop_stk = pop_dic['pop_stk_prop'] > 0.5 # empirical!
+    t_arr = np.array(k2_dict['t'])[i_in_ring]
+    mask = np.zeros(len(k2_dict['t'])).astype(bool)
+    for idx in stack_dict:
+        mask += np.array(stack_dict[idx]['bool'],dtype=bool)
+    pa_stat = [[],[],[],[],[]] # np.zeros((5,len(k2_dict['t']))) # s*3, uns*2:  # /lnk, unlnk, stk,/ lnk, unlnk/ # TODO: IS THIS OVERWRITTING?
+    pa_cnt = np.zeros(5)
+    for iaidx, ia_dic in pa_dict.items():
+        is_linked = ia_dic['is_sharing']
+        for t in t_arr:
+            i = k2_dict['t'].index(t)
+            is_stk = stack_dict[iaidx]['bool'][i]
+            ang = ia_dic[t][0]
+            if mask[i]: # 2 or (2+1) branches; True: 2+1
+                if is_stk: # 1
+                    pa_stat[2].append(ang)
+                    pa_cnt[2] += 1
+                else: # 2
+                    if is_linked:
+                        pa_stat[0].append(ang) # TODO: OVERFLOW
+                        pa_cnt[0] += 1
+                    else:
+                        pa_stat[1].append(ang)
+                        pa_cnt[1] += 1
+            elif not mask[i]:
+                if is_linked:
+                    pa_stat[3].append(ang)
+                    pa_cnt[3] += 1
+                else:
+                    pa_stat[4].append(ang)
+                    pa_cnt[4] += 1
+            else:
+                assert 0 == 1
+    pa_dev = np.array([np.std(pa_stat[i]) for i in range(len(pa_cnt))]) # pa_dev = np.array([np.std(pa_stat[i][pa_stat[i]!=0]) for i in range(len(pa_cnt))])
+    pa_stat = np.array([sum(ls) for ls in pa_stat])/pa_cnt # pa_stat = np.sum(pa_stat, axis=1)/pa_cnt
+    pa_stat[np.isnan(pa_stat)] = 0 # nan happens when pa_cnt contains 0. pa_stat is now array of mean.
+    loss = np.zeros(len(t_arr))
+    for iaidx, ia_dic in pa_dict.items():
+        is_linked = ia_dic['is_sharing']
+        for il, t in enumerate(t_arr):
+            i = k2_dict['t'].index(t)
+            is_stk = stack_dict[iaidx]['bool'][i]
+            ang = ia_dic[t][0]
+            if mask[i] and is_pop_prop_stk: # 2 or (2+1) branches; True: 2+1
+                if is_stk: # 1
+                    loss[il] += (ang - pa_stat[2])**2
+                else: # 2
+                    if is_linked:
+                        loss[il] += (ang - pa_stat[0])**2
+                    else:
+                        loss[il] += (ang - pa_stat[1])**2
+            elif not mask[i] and not is_pop_prop_stk:
+                if is_linked:
+                    loss[il] += (ang - pa_stat[3])**2  
+                else:
+                    loss[il] += (ang - pa_stat[4])**2
+            else:
+                loss[il] += 10000000
+    i_loss_min = np.argmin(loss)
+    t_min = t_arr[i_loss_min]
+    i_tot = k2_dict['t'].index(t_min)
+    # pop_dic = pop_summ_dic[(arm, jun, temp, conc)]
+    stk_dic = {}
+    for idx in stack_dict:
+        stk_dic[idx] = stack_dict[idx]['bool'][i_tot]
+    return [(arm,jun,temp,conc),{'t' : t_min, 'stk_dic' : stk_dic , 'ang_ls' : pa_ls[0][t_min] , 'k2_ls' : k2_ls[i_tot][1:] , 'loss' : loss[i_loss_min] , 'is_stk' : mask[i_tot] , 'num_pts_inring' : len(loss) , 'stat' : pa_stat , 'dev' : pa_dev , 'cnt' : pa_cnt , 'stat_offset' : pop_dic['stat'] - pa_stat , 'pop_dev' : pop_dic['dev']}]
+
+def load_data(arms, jun, temp, conc):
+    sp_suffix = ''
+    conf_suffix = '' # -jun_10
+    dims_ls = [20, 2, 7]
+    if jun == 2:
+        conf_suffix = ''
+    else:
+        conf_suffix = f'-jun_{jun}'
+        dims_ls[1] = jun
+    # load data
+    varname = 'pj'
+    label = f'{arms}arms@({temp}C,{conc}M){conf_suffix}{flag_suffix}{sp_suffix}'
+    loose_lbl = f'{temp}C-{conc}M-GPU{sp_suffix}'
+    savepath = f'data/composed_traj/{arms}arms{conf_suffix}{flag_suffix}/{loose_lbl}/{label}'
+    var_path = f'{savepath}.{varname}tp'
+    path = f'results/{arms}arms{conf_suffix}{flag_suffix}/{varname}/{varname}_vtime-{label}.png'
+    with open(os.path.splitext(path)[0]+'.stack','rb') as f:
+        nonstacking_vtime_dic, stacking_vtime_dic = pickle.load(f)
+    varname = 'k2'
+    label = f'{arms}arms@({temp}C,{conc}M){conf_suffix}{flag_suffix}{sp_suffix}'
+    loose_lbl = f'{temp}C-{conc}M-GPU{sp_suffix}'
+    savepath = f'data/composed_traj/{arms}arms{conf_suffix}{flag_suffix}/{loose_lbl}/{label}'
+    var_path = f'{savepath}.{varname}tp'
+    path = f'results/{arms}arms{conf_suffix}{flag_suffix}/{varname}/{varname}_vtime-{label}.png'
+    with open(var_path,'rb') as f:
+        k2_ls_res = pickle.load(f)    
+    # varname = 'ns'
+    # label = f'{arms}arms@({temp}C,{conc}M){conf_suffix}{sp_suffix}'
+    # loose_lbl = f'{temp}C-{conc}M-GPU{sp_suffix}'
+    # savepath = f'data/composed_traj/{arms}arms{conf_suffix}/{loose_lbl}/{label}'
+    # var_path = f'{savepath}.{varname}'
+    # with open(var_path,'rb') as f:
+    #     ns = pickle.load(f)  
+    varname = 'pa'
+    label = f'{arms}arms@({temp}C,{conc}M){conf_suffix}{flag_suffix}{sp_suffix}'
+    loose_lbl = f'{temp}C-{conc}M-GPU{sp_suffix}'
+    savepath = f'data/composed_traj/{arms}arms{conf_suffix}{flag_suffix}/{loose_lbl}/{label}'
+    var_path = f'{savepath}.{varname}tp'
+    with open(var_path,'rb') as f:
+        p_ang_ls_res = pickle.load(f)    
+    return nonstacking_vtime_dic, stacking_vtime_dic, p_ang_ls_res, k2_ls_res # , ns
+
+def generate_Z_layer(Z,prob,delta=0.06,is_FWHM=False):
+    if is_FWHM:
+        Z_threshold = (np.max(Z))/2 # delta at center now
+    else:
+        prob = 1-prob
+        Z_sum = np.sum(Z)
+        Z_thresholds_arr = np.linspace(np.min(Z),np.max(Z),1000)
+        Z_threshold = 0
+        for Z_th in Z_thresholds_arr:
+            if np.sum(Z*(Z>Z_th)) / Z_sum <= prob: # integral of values above Z_th drops to 1-prob
+                Z_threshold = Z_th
+                break
+    # Produce Z
+    Z_sub = Z*(Z>Z_threshold-delta/2)
+    Z_sub_ring = Z_sub*(~(Z_sub>Z_threshold+delta/2))
+    return Z_sub_ring
+def if_in_ring(t):
+    if t % 4 == 0:
+        return False # # off ring
+    elif t % 2 == 1:
+        # print(pos)
+        # print(i_x,i_y)
+        # print(Z_ring[i_x,i_y])
+        return False # on ring
+    elif t % 2 == 0 and t % 4 == 2:
+        return True # in ring
+def check_if_in_ring(pos, Z_ring, X, Y):
+    # only a single ring!! Could support multiple rings if necessary: max_tree_depth. Now hardcoding to == 1.
+    # locate the pos in mgrid
+    dx = X[0,1]-X[0,0] # because of np.rot90
+    dy = Y[1,0]-Y[0,0] # because of np.rot90
+    i_x, i_y = (int((pos[0]-X[0,0])//dx), int((pos[1]-Y[0,0])//dy))
+    if pos[0] > X[-1,-1] or pos[1] > Y[0,0]: # max at: X[-1,-1], Y[0,0]
+        return False
+    # count flip. cross a ring: False --> True --> False. top/right/bottom/left
+    t = sum(Z_ring[:i_y, i_x][:-1] != Z_ring[:i_y, i_x][1:])
+    l = sum(Z_ring[i_y, :i_x][:-1] != Z_ring[i_y, :i_x][1:])
+    b = sum(Z_ring[i_y:, i_x][:-1] != Z_ring[i_y:, i_x][1:])
+    r = sum(Z_ring[i_y, i_x:][:-1] != Z_ring[i_y, i_x:][1:])
+    # check if trbl agree
+    if if_in_ring(t)+if_in_ring(l)+if_in_ring(b)+if_in_ring(r) > 2:
+        return True
+    else:
+        return False
+def obtain_population_stats():
+    with open('tmp\\tmp_pop_plot_summ_dict.tmp','rb') as f:
+        plot_summ_dic = pickle.load(f)
+    pop_summ_dic = {}
+    for cond in plot_summ_dic:
+        # summ_dic[cond]['stat'][np.isnan(summ_dic[cond]['stat'])] = 0
+        pop_summ = plot_summ_dic[cond]
+        pop_stk_prop = pop_summ.pop('prop_stacking')
+        pa_stat_pop = np.zeros(5) # /lnk, unlnk, stk,/ lnk, unlnk/
+        pa_dev_pop = np.zeros(5) # /lnk, unlnk, stk,/ lnk, unlnk/
+        for ang_type in pop_summ:
+            if pop_summ[ang_type] is None:
+                continue
+            n, m1, std, m3_s = pop_summ[ang_type]
+            if ang_type == 'nonstacking':
+                pa_stat_pop[0] = m1
+                pa_dev_pop[0] = std
+            elif ang_type == 'unlinked':
+                pa_stat_pop[1] = m1
+                pa_dev_pop[1] = std
+            elif ang_type == 'stacking':
+                pa_stat_pop[2] = m1
+                pa_dev_pop[2] = std
+            elif ang_type == 'no-stacking,linked':
+                pa_stat_pop[3] = m1
+                pa_dev_pop[3] = std
+            elif ang_type == 'no-stacking,unlinked':
+                pa_stat_pop[4] = m1
+                pa_dev_pop[4] = std
+            else:
+                assert 0==1
+        pop_summ_dic[cond] = {'stat' : pa_stat_pop, 'dev' : pa_dev_pop, 'pop_stk_prop' : pop_stk_prop}
+    return pop_summ_dic
 
 
 # jobs end[]
@@ -92,6 +348,246 @@ if __name__ == '__main__':
 
 
 '''
+0502 Revisit the distribution plot of inter-arm angles. Protocols of identifying Stacking & inter-arm angles have changed.
+# 03-01 Scatter Plot of Stacking PA distribution (vs conds)
+def misc():
+    plot_summ_dic = {}
+    arm_list = [6]
+    jun_list = [0, 1, 2, 5, 10]
+    for arm in arm_list:
+        for jun in jun_list:
+            if jun == 2:
+                conc_list = [0.05, 0.1, 0.3, 0.5] # 0.05, 0.1, 0.3, 0.5
+                temp_list = [20, 23, 27, 30, 40, 50] # 20, 23, 27, 30, 40, 50
+            else:
+                conc_list = [0.1, 0.5] # 0.05, 0.1, 0.3, 0.5
+                temp_list = [20, 30] # 20, 23, 27, 30, 40, 50
+            for temp in temp_list:
+                for conc in conc_list:
+                    if not (arm==4 and jun==0 and temp==30 and conc==0.1):
+                        plot_summ_dic[(arm,jun,temp,conc)] = ns_time_summ_pa(arm, jun, temp, conc)
+    stacking_scatter_plot(plot_summ_dic)
+    return True
+
+def stacking_scatter_plot(plot_summ_dic):
+    # f=open('tmp\\tmp.txt','a')
+    row,col = (2,1)
+    fig = plt.figure(figsize=(3*col+1,3.5*row))
+    gs = fig.add_gridspec(row, col, hspace=0.3, wspace=0.1) # hspace=0.4, wspace=0.1
+    axs = gs.subplots(sharex='col')
+    # fig, axs = plt.subplots()
+    jun_list = [0, 1, 2, 5, 10]
+    conc_list = [0.05, 0.1, 0.3, 0.5] # 0.05, 0.1, 0.3, 0.5
+    temp_list = [20, 23, 27, 30, 40, 50] # 20, 23, 27, 30, 40, 50
+    markers = ['v', 's',  '*', 'o', 'p', '8', 'h', 'H', 'D', 'd', 'P', 'X']
+    plotting_stacking_type = {'with_stacking':('stacking', 'nonstacking', 'unlinked'), 'linked': ('stacking', 'nonstacking', 'no-stacking,linked')}
+    # different stacking types?
+    cm_sub = np.linspace(0.2, 0.7, 6)
+    cmap = plt.get_cmap('hot')
+    colors = [cmap(x) for x in cm_sub]
+    for cond, vals in plot_summ_dic.items():
+        arm,jun,temp,conc = cond
+        prop_stacking = vals['prop_stacking']
+        del vals['prop_stacking']
+        for stacking_type, summ in vals.items():
+            if summ == None:
+                continue
+            freq, m1, std, m3_s = summ
+            n = sum(freq)
+            if jun == 2:
+                conf_suffix = ''
+            else:
+                conf_suffix = f'-jun_{jun}'
+            sp_suffix = ''
+            # label = f'{arm}arms@({temp}C,{conc}M){conf_suffix}{sp_suffix}'
+            # f.write(f'{label} , Type:{stacking_type} ~ Mean:{m1:.3f} ; STD:{std:.3f} ; #total:{n} ; is_stacking: {prop_stacking}\n')
+            if stacking_type in plotting_stacking_type['with_stacking']:
+                lw = 0.5
+                # title = f'{arm}Arms, Mean and STD of Patch Angles when NS is stacking'
+                if stacking_type in plotting_stacking_type['linked']:
+                    axs[0].scatter(m1, std, color=colors[temp_list.index(temp)], marker=markers[conc_list.index(conc)], s=5*(jun+1), linewidth=lw, edgecolor='#000000')
+                else:
+                    axs[0].scatter(m1, std, color=colors[temp_list.index(temp)], marker=markers[conc_list.index(conc)], s=5*(jun+1), linewidth=lw, edgecolor=colors[temp_list.index(temp)], facecolors='none')
+            else:
+                lw = 0.5 # 0.2
+                # title = f'{arm}Arms, Mean and STD of Patch Angles when NS is NOT stacking'
+                if stacking_type in plotting_stacking_type['linked']:
+                    axs[1].scatter(m1, std, color=colors[temp_list.index(temp)], marker=markers[conc_list.index(conc)], s=5*(jun+1), linewidth=lw, edgecolor='#000000')
+                else:
+                    axs[1].scatter(m1, std, color=colors[temp_list.index(temp)], marker=markers[conc_list.index(conc)], s=5*(jun+1), linewidth=lw, edgecolor=colors[temp_list.index(temp)], facecolors='none')
+            # if stacking_type in plotting_stacking_type['linked']:
+            #     ax.scatter(m1, std, color=colors[temp_list.index(temp)], marker=markers[conc_list.index(conc)], s=5*(jun+1), linewidth=lw, edgecolor='#000000')
+            # else:
+            #     ax.scatter(m1, std, color=colors[temp_list.index(temp)], marker=markers[conc_list.index(conc)], s=5*(jun+1), linewidth=lw, edgecolor=colors[temp_list.index(temp)], facecolors='none')
+    axs[0].set_xlabel('Mean Patch Angle', fontsize=14) # r'$\mu(^\circ)$'
+    axs[0].set_ylabel('Patch Angle Standard Deviation', fontsize=8) # r'$\sigma(^\circ)$'
+    axs[0].xaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter(u"{x:.0f}°"))
+    axs[0].yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter(u"{x:.0f}°"))
+    axs[0].tick_params(bottom=True,top=True,left=True,right=True,direction='in')
+    title = f'{arm}Arms, Mean and STD of Patch Angles when NS is stacking'
+    axs[0].set_title(title, fontsize=8)
+    axs[0].set_xlim((70,180))
+    axs[0].set_ylim((10,50))
+
+    axs[1].set_xlabel('Mean Patch Angle', fontsize=14) # r'$\mu(^\circ)$'
+    axs[1].set_ylabel('Patch Angle Standard Deviation', fontsize=8) # r'$\sigma(^\circ)$'
+    axs[1].xaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter(u"{x:.0f}°"))
+    axs[1].yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter(u"{x:.0f}°"))
+    axs[1].tick_params(bottom=True,top=True,left=True,right=True,direction='in')
+    title = f'{arm}Arms, Mean and STD of Patch Angles when NS is NOT stacking'
+    axs[1].set_title(title, fontsize=8)
+    axs[1].set_xlim((70,180))
+    axs[1].set_ylim((10,50))
+
+    plt.savefig(f'tmp/{title}.png', dpi = 800)
+    plt.close()
+    return True
+
+def ns_time_summ_pa(arms, jun, temp, conc):
+    from plot_tasks.ns_plots.ns_pa_plot import data_process_func as pa_func
+    stacking_options_ls = [('stacking', 'nonstacking', 'unlinked'),('no-stacking,unlinked','no-stacking,linked')] # 'stacking', 'nonstacking', 'unlinked', 'no-stacking,unlinked','no-stacking,linked', transiting?
+    sp_suffix = ''
+    conf_suffix = '' # -jun_10
+    dims_ls = [20, 2, 7]
+    ns_struc = get_params(arms)
+    if jun == 2:
+        conf_suffix = ''
+    else:
+        conf_suffix = f'-jun_{jun}'
+        dims_ls[1] = jun
+    # load data
+    varname = 'pj'
+    label = f'{arms}arms@({temp}C,{conc}M){conf_suffix}{sp_suffix}'
+    loose_lbl = f'{temp}C-{conc}M-GPU{sp_suffix}'
+    savepath = f'data/composed_traj/{arms}arms{conf_suffix}/{loose_lbl}/{label}'
+    var_path = f'{savepath}.{varname}tp'
+    path = f'results/{arms}arms{conf_suffix}/{varname}/{varname}_vtime-{label}.png'
+    with open(os.path.splitext(path)[0]+'.stack','rb') as f:
+        nonstacking_vtime_dic, stacking_vtime_dic = pickle.load(f)
+    varname = 'pa'
+    label = f'{arms}arms@({temp}C,{conc}M){conf_suffix}{sp_suffix}'
+    loose_lbl = f'{temp}C-{conc}M-GPU{sp_suffix}'
+    savepath = f'data/composed_traj/{arms}arms{conf_suffix}/{loose_lbl}/{label}'
+    var_path = f'{savepath}.{varname}tp'
+    path = f'results/{arms}arms{conf_suffix}/{varname}/{varname}_vtime-{label}.png'
+    with open(var_path,'rb') as f:
+        p_ang_ls_res = pickle.load(f)
+    # re-organize pa_vtime_dic
+    pa_vtime_dic = pa_func(p_ang_ls_res, None, vtime= True)
+    # determine propensity to stack
+    stk_cnt = 0
+    for idx in ns_struc['PA']:
+        stk_cnt += np.sum(np.array(stacking_vtime_dic[idx]['bool'],dtype=int))
+    prop_stacking = stk_cnt/((ns_struc['#arm']//2)*len(stacking_vtime_dic[(0,1)]['t']))
+    summ_dic = {'prop_stacking':prop_stacking} 
+    for stacking_option in stacking_options_ls[0]:
+        var_ls = create_var_ls(stacking_option,ns_struc,pa_vtime_dic,stacking_vtime_dic)
+        summ_dic[stacking_option] = tmp_summ(var_ls, 36) if var_ls is not None else None # n, m1, std, m3_s
+    for stacking_option in stacking_options_ls[1]:
+        var_ls = create_var_ls(stacking_option,ns_struc,pa_vtime_dic,stacking_vtime_dic)
+        summ_dic[stacking_option] = tmp_summ(var_ls, 36) if var_ls is not None else None # n, m1, std, m3_s
+    return summ_dic
+
+def create_var_ls(is_stacking,ns_struc,pa_vtime_dic,stacking_vtime_dic):
+    var_ls = []
+    mask = np.zeros(len(stacking_vtime_dic[(0,1)]['t'])).astype(bool)
+    if is_stacking in ['unlinked', 'stacking', 'nonstacking']: # w/ stk
+        for idx in ns_struc['PA']:
+            mask += np.array(stacking_vtime_dic[idx]['bool'],dtype=bool)
+        if np.sum(mask.astype(int)) < 100: # empirical!
+            return None
+        if is_stacking == 'unlinked':
+            for idx in ns_struc['unlinked_PA']:
+                var_ls.extend([pa_vtime_dic[idx][time][0] for time in stacking_vtime_dic[idx]['t']*mask.astype(int) if time != 0])
+        elif is_stacking == 'stacking':
+            for idx in ns_struc['linked_PA']:
+                var_ls.extend([pa_vtime_dic[idx][time][0] for time in stacking_vtime_dic[idx]['t']*mask.astype(int)*np.array(stacking_vtime_dic[idx]['bool']).astype(int) if time != 0])
+        elif is_stacking == 'nonstacking':
+            for idx in ns_struc['linked_PA']:
+                var_ls.extend([pa_vtime_dic[idx][time][0] for time in stacking_vtime_dic[idx]['t']*mask.astype(int)*(~np.array(stacking_vtime_dic[idx]['bool'])).astype(int) if time != 0])
+    elif is_stacking in ['no-stacking,linked','no-stacking,unlinked']: # w/o stk
+        for idx in ns_struc['PA']:
+            mask += np.array(stacking_vtime_dic[idx]['bool'],dtype=bool)
+        mask = ~mask
+        if np.sum(mask.astype(int)) < 100: # empirical!
+            return None
+        if is_stacking == 'no-stacking,linked':
+            for idx in ns_struc['linked_PA']:
+                var_ls.extend([pa_vtime_dic[idx][time][0] for time in stacking_vtime_dic[idx]['t']*mask.astype(int) if time != 0])
+        elif is_stacking == 'no-stacking,unlinked':
+            for idx in ns_struc['unlinked_PA']:
+                var_ls.extend([pa_vtime_dic[idx][time][0] for time in stacking_vtime_dic[idx]['t']*mask.astype(int) if time != 0])
+    if len(var_ls) == 0:
+        return None
+    return var_ls
+    # if is_stacking == 'unlinked':
+    #     for iaidx in ns_struc['unlinked_PA']:
+    #         var_ls.extend(stacking_vtime_dic[iaidx]['raw'])                        
+    # elif is_stacking == 'no-stacking,unlinked':
+    #     mask = np.zeros(len(stacking_vtime_dic[(0,1)]['bool']),dtype=bool) # generate mask from linked, not unlinked.
+    #     for iaidx in ns_struc['linked_PA']:
+    #         mask += np.array(stacking_vtime_dic[iaidx]['bool']) + np.array(nonstacking_vtime_dic[iaidx]['bool']) # exclude all frames with any stacking or nonstackings
+    #     mask = ~mask
+    #     for iaidx in ns_struc['unlinked_PA']:
+    #         pa_ls = np.array(stacking_vtime_dic[iaidx]['raw'],dtype=float) * mask.astype(int)
+    #         var_ls.extend(pa_ls[pa_ls!=0])
+    # elif is_stacking == 'no-stacking,linked':
+    #     for iaidx in ns_struc['linked_PA']:
+    #         mask = ~(np.array(stacking_vtime_dic[iaidx]['bool']) + np.array(nonstacking_vtime_dic[iaidx]['bool']))
+    #         pa_ls = np.array(stacking_vtime_dic[iaidx]['raw'],dtype=float) * mask.astype(int)
+    #         var_ls.extend(pa_ls[pa_ls!=0])
+    # else:
+    #     for iaidx in ns_struc['linked_PA']:
+    #         if is_stacking == 'stacking':
+    #             pa_ls = np.array(stacking_vtime_dic[iaidx]['raw'],dtype=float) * np.array(stacking_vtime_dic[iaidx]['bool'],dtype=int)
+    #         elif is_stacking == 'nonstacking':
+    #             pa_ls = np.array(nonstacking_vtime_dic[iaidx]['raw'],dtype=float) * np.array(nonstacking_vtime_dic[iaidx]['bool'],dtype=int)
+    #         else:
+    #             assert 0==1
+    #         var_ls.extend(pa_ls[pa_ls!=0])
+    return var_ls
+
+def tmp_summ(var_ls, bin_num):
+    x_lim = (0,180)
+    y_lim = (0,0.2)
+    n,bin_edges = np.histogram(var_ls,bins = bin_num, range = x_lim)
+    n, m1, std, m3_s = moments_calc(n, var_ls)
+    return n, m1, std, m3_s
+
+def get_params(arm_num):
+    if arm_num == 3:
+        ns_struc = {'#arm':3, 'linked_PA': [(0,1),(0,2),(1,2)], 'unlinked_PA': [], 'PA' : [(0,1),(0,2),(1,2)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+    elif arm_num == 4:
+        ns_struc = {'#arm':4, 'linked_PA': [(0,1),(0,3),(1,2),(2,3)], 'unlinked_PA': [(0,2),(1,3)], 'PA': [(0,1),(0,3),(1,2),(2,3),(0,2),(1,3)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+    elif arm_num == 5:
+        ns_struc = {'#arm':5, 'linked_PA': [(0,1),(0,4),(1,2),(2,3),(3,4)], 'unlinked_PA': [(0,2),(1,3),(2,4),(0,3),(1,4)], 'PA' : [(0,1),(0,4),(1,2),(2,3),(3,4),(0,2),(1,3),(2,4),(0,3),(1,4)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+    elif arm_num == 6:
+        ns_struc = {'#arm':6, 'linked_PA': [(0,1),(0,5),(1,2),(2,3),(3,4),(4,5)], 'unlinked_PA': [(0,2),(1,3),(2,4),(3,5),(0,3),(1,4),(2,5),(0,4),(1,5)], 'PA' : [(0,1),(0,5),(1,2),(2,3),(3,4),(4,5),(0,2),(1,3),(2,4),(3,5),(0,3),(1,4),(2,5),(0,4),(1,5)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+    return ns_struc
+
+def moments_calc(n, var_ls):
+    ''
+    Calculate the 0th raw, 1st raw, 2nd central, and 3rd standardized moment of a given distribution.
+    ''
+    n = np.array(n)
+    m0 = np.sum(n) # 0th unitless raw moment: integration
+    m1 = np.sum(var_ls)/m0
+    m2_c = stats.moment(var_ls, moment=2) # 2nd central moment: variance
+    std = m2_c**0.5 # standard deviation
+    m3_c = stats.moment(var_ls, moment=3) # 3rd central moment
+    m3_s = m3_c / (std**3) # 3rd standardized moment: skewness
+    return n, m1, std, m3_s
+
+
+
+
+
+
+
+
+
+
+
 0412 Finding the best conformation
 def misc():
     plot_summ_dic = {}
@@ -414,7 +910,7 @@ def ns_pa_r_summ(single=True, arms=4, temp=20, conc=0.5, sp_suffix='', conf_suff
     from utils.ns_plot import SL_ns
     varname = 'pa'
     dims_adjust(dims_ls, conf_suffix, single, sp_suffix)
-    data = (arms, temp, conc, sp_suffix, conf_suffix, dims_ls)
+    data = (arms, temp, conc, sp_suffix, conf_suffix, flag_suffix, dims_ls)
     results = SL_ns(False, data, varname, vtime=True)
     var_ls_results, label, plotpath = results
     from plot_tasks.ns_plots.ns_pa_plot import data_process_func
@@ -422,7 +918,7 @@ def ns_pa_r_summ(single=True, arms=4, temp=20, conc=0.5, sp_suffix='', conf_suff
         
     varname = 'k2'
     dims_adjust(dims_ls, conf_suffix, single, sp_suffix)
-    data = (arms, temp, conc, sp_suffix, conf_suffix, dims_ls)
+    data = (arms, temp, conc, sp_suffix, conf_suffix, flag_suffix, dims_ls)
     results = SL_ns(False, data, varname, vtime=True)
     var_ls_results, label, plotpath = results
     from plot_tasks.ns_plots.ns_k2_plot import data_process_func
