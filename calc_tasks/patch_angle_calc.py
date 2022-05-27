@@ -29,7 +29,7 @@ def patch_angle_calc(path_top, path_traj, arm_num, dims_ls, ns_input = None, sys
         with open(path_traj,'r') as f:
             f.readline()
             ret=re.match('^b = ([0-9]+) ([0-9]+) ([0-9]+)\n',f.readline())
-        box_dim = np.array((ret.group(1),ret.group(2),ret.group(3)))
+        box_dim = np.array((int(ret.group(1)),int(ret.group(2)),int(ret.group(3))))
         ns_tm = nc.construct(p=ns_input, box_dim=box_dim)
     else:
         ns_tm = nc.construct(obj=ns_input)

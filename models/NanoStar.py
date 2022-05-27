@@ -26,8 +26,9 @@ class NanoStar:
         '''
         self.strands = strands_dic
         self.arms = self.binding(strands, dims_ls, box_dim)
-        self.center = self.center_gen(strands, dims_ls) # PBCC performed in self.binding, so self.center must goes afterwards
+        self.center = self.center_gen(self.strands, dims_ls) # PBCC performed in self.binding, so self.center must goes afterwards. Also, 'strands' is modified by self.binding, so use self.strands here.
         self.box_dim = box_dim
+        self.dims = dims_ls
 
     def center_gen(self, strands_dic, dims_ls):
         len_arm, len_cen, len_end = dims_ls
@@ -82,7 +83,7 @@ class NanoStar:
         phasors = np.zeros((2,3)) # NOT normalized to 1. Instead, noted in sines/cosines
         for strand in strands_dic.values():
             for base in strand.base_sequence.values():
-                angles = base.position / (box_dim/(2*np.pi))
+                angles = np.array(base.position) / (box_dim/(2*np.pi))
                 phasors += np.vstack((np.sin(angles),np.cos(angles)))
         CoM_pos = np.arctan2(-phasors[0],-phasors[1]) + np.pi # Now in 0~2pi. '-' counterbalancing '+np.pi'.
         CoM_pos *= (box_dim/(2*np.pi))
@@ -95,7 +96,7 @@ class NanoStar:
                 _ = self.strands[base.strand_id].base_sequence[base.base_id].set_position(tuple(new_pos))
         # PBCC
         base = bind_base
-        old_pos = base.position
+        old_pos = np.array(base.position)
         # traverse backward, skipping bind_base
         while strands_dic[base.strand_id].base_sequence.get(base.prev_id) is not None and dist(old_pos,strands_dic[base.strand_id].base_sequence[base.prev_id].position) < 4:
             base = strands_dic[base.strand_id].base_sequence[base.prev_id]
@@ -106,7 +107,7 @@ class NanoStar:
             _ = self.strands[base.strand_id].base_sequence[base.base_id].set_position(tuple(new_pos))
         # modifying bind_base
         base = bind_base
-        old_pos = base.position
+        old_pos = np.array(base.position)
         new_pos = ((old_pos % box_dim) + box_dim) % box_dim 
         _ = base.set_position(tuple(new_pos))
         _ = self.strands[base.strand_id].base_sequence[base.base_id].set_position(tuple(new_pos))

@@ -29,15 +29,15 @@ def SL_ns(calc_func, data, varname, vtime=False):
     :data: in which the descriptions of nanostars (trajectory) are stored.
     :varname: codename of the measurement.
     '''
-    arms, temp, conc, sp_suffix, conf_suffix, dims_ls = data
-    label = f'{arms}arms@({temp}C,{conc}M){conf_suffix}{sp_suffix}'
+    arms, temp, conc, sp_suffix, conf_suffix, flag_suffix, dims_ls = data
+    label = f'{arms}arms@({temp}C,{conc}M){conf_suffix}{flag_suffix}{sp_suffix}'
     loose_lbl = f'{temp}C-{conc}M-GPU{sp_suffix}'
-    top_path = f'../../ox-sync/simul-inputs-{arms}arms{conf_suffix}/{arms}arm-rods-clustered{conf_suffix}.top'
-    traj_path = f'../../ox-sync/simul-inputs-{arms}arms{conf_suffix}/{loose_lbl}/trajectory.dat'
-    savepath = f'data/composed_traj/{arms}arms{conf_suffix}/{loose_lbl}/{label}'
-    plotpath = f'results/{arms}arms{conf_suffix}/{varname}/{varname}_hist-{label}.png'
+    top_path = f'../../ox-sync/simul-inputs-{arms}arms{conf_suffix}{flag_suffix}/{arms}arm-rods-clustered{conf_suffix}.top'
+    traj_path = f'../../ox-sync/simul-inputs-{arms}arms{conf_suffix}{flag_suffix}/{loose_lbl}/trajectory.dat'
+    savepath = f'data/composed_traj/{arms}arms{conf_suffix}{flag_suffix}/{loose_lbl}/{label}'
+    plotpath = f'results/{arms}arms{conf_suffix}{flag_suffix}/{varname}/{varname}_hist-{label}.png'
     if vtime == True:
-        plotpath = f'results/{arms}arms{conf_suffix}/{varname}/{varname}_vtime-{label}.png'
+        plotpath = f'results/{arms}arms{conf_suffix}{flag_suffix}/{varname}/{varname}_vtime-{label}.png'
     if varname == 'sys' or varname == 'ns':
         var_path = f'{savepath}.{varname}'
     else:
@@ -160,8 +160,8 @@ def ns_time_k2_plot(data_process_func, results, plot_confs, data, varname):
     avg1 /= avg0
     avg0t = avg0
     avg0 /= avg0
-    with open('tmp\\tmp.txt','a') as f:
-        f.write(f'{label}. avg_lbd0:{avg0:.1f} ± {std0:.1f}, avg_lbd1:{avg1:.1f} ± {std1:.1f}, avg_lbd2:{avg2:.1f} ± {std2:.1f} , divider lbd0: {avg0t:.4f} \n')
+    # with open('tmp\\tmp.txt','a') as f:
+    #     f.write(f'{label}. avg_lbd0:{avg0:.1f} ± {std0:.1f}, avg_lbd1:{avg1:.1f} ± {std1:.1f}, avg_lbd2:{avg2:.1f} ± {std2:.1f} , divider lbd0: {avg0t:.4f} \n')
     return True
 
 def ns_heatmap_k2_plot(data_process_func, results, plot_confs, data, varname):
@@ -178,47 +178,59 @@ def ns_heatmap_k2_plot(data_process_func, results, plot_confs, data, varname):
     pj_path = '/'.join(path)
     with open(os.path.splitext(pj_path)[0]+'.stack','rb') as f:
         nonstacking_vtime_dic, stacking_vtime_dic = pickle.load(f)
-    # determine if the NS is stacking
-    time_idx = stacking_vtime_dic[(0,1)]['t']
-    stacking_state_arr = np.zeros(len(time_idx))
-    for idx in ns_struc['linked_PA']:
-        stacking_state_arr += np.array(stacking_vtime_dic[idx]['bool'], dtype=int)
-    num_stacking = len(stacking_state_arr) - sum([1 if b == 0 else 0 for b in stacking_state_arr])
-    num_double_stacking = sum([1 if b == 2 else 0 for b in stacking_state_arr])
-    is_high_prop_stacking = True if num_stacking/len(stacking_state_arr) > 0.122 else False
+    # determine if the NS is stacking? NO. Plot everything.
     # load data
+    is_high_prop_stacking = True
     lbd_axs_ls = var_dic['axes']
-    lbd1_ls = [conf_lbd[0][0] for conf_lbd in lbd_axs_ls]
-    l2_ls = [conf_lbd[1][0]/conf_lbd[0][0] for conf_lbd in lbd_axs_ls]
-    l3_ls = [conf_lbd[2][0]/conf_lbd[1][0] for conf_lbd in lbd_axs_ls]
-    # for conf_lbd in lbd_axs_ls:
-    #     (lbd1,axs1),(lbd2,axs2),(lbd3,axs3) = conf_lbd
-    #     lbd1_ls.append(lbd1)
-    #     l2_ls.append(lbd2/lbd1)
-    #     l3_ls.append(lbd3/lbd2)
-    l2_arr = np.array(l2_ls)
-    l3_arr = np.array(l3_ls)
-    if is_high_prop_stacking:
-        draw_k2_heatmap(is_high_prop_stacking, True, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath)
-        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=0)
-        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=1)
-        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=2)
-        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=0, is_reverse_select_number_stack=True)
-    else:
-        draw_k2_heatmap(is_high_prop_stacking, True, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath)
-        draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=0)
+    l2_arr = np.array([conf_lbd[1][0]/conf_lbd[0][0] for conf_lbd in lbd_axs_ls])
+    l3_arr = np.array([conf_lbd[2][0]/conf_lbd[1][0] for conf_lbd in lbd_axs_ls])
+    draw_k2_heatmap(is_high_prop_stacking, True, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath)
+    # draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=0)
+    # draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=1)
+    # draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=2)
+    # draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=0, is_reverse_select_number_stack=True)
+    # determine if the NS is stacking
+    # time_idx = stacking_vtime_dic[(0,1)]['t']
+    # stacking_state_arr = np.zeros(len(time_idx))
+    # for idx in ns_struc['linked_PA']:
+    #     stacking_state_arr += np.array(stacking_vtime_dic[idx]['bool'], dtype=int)
+    # num_stacking = len(stacking_state_arr) - sum([1 if b == 0 else 0 for b in stacking_state_arr])
+    # num_double_stacking = sum([1 if b == 2 else 0 for b in stacking_state_arr])
+    # is_high_prop_stacking = True if num_stacking/len(stacking_state_arr) > 0.122 else False
+    # # load data
+    # lbd_axs_ls = var_dic['axes']
+    # lbd1_ls = [conf_lbd[0][0] for conf_lbd in lbd_axs_ls]
+    # l2_ls = [conf_lbd[1][0]/conf_lbd[0][0] for conf_lbd in lbd_axs_ls]
+    # l3_ls = [conf_lbd[2][0]/conf_lbd[1][0] for conf_lbd in lbd_axs_ls]
+    # # for conf_lbd in lbd_axs_ls:
+    # #     (lbd1,axs1),(lbd2,axs2),(lbd3,axs3) = conf_lbd
+    # #     lbd1_ls.append(lbd1)
+    # #     l2_ls.append(lbd2/lbd1)
+    # #     l3_ls.append(lbd3/lbd2)
+    # l2_arr = np.array(l2_ls)
+    # l3_arr = np.array(l3_ls)
+    # if is_high_prop_stacking:
+    #     draw_k2_heatmap(is_high_prop_stacking, True, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath)
+    #     draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=0)
+    #     draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=1)
+    #     draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=2)
+    #     draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=0, is_reverse_select_number_stack=True)
+    # else:
+    #     draw_k2_heatmap(is_high_prop_stacking, True, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath)
+    #     draw_k2_heatmap(is_high_prop_stacking, False, l2_arr, l3_arr, stacking_vtime_dic, ns_struc, plotpath, number_stack=0)
     return True
 
 def draw_k2_heatmap(is_high_prop_stacking, is_draw_all, l2_arr, l3_arr, stack_dict, ns_struc, plotpath, number_stack = 2, is_reverse_select_number_stack = False):
-    title_high_prop = 'Stacking' if is_high_prop_stacking else 'No-stacking'
+    # title_high_prop = 'Stacking' if is_high_prop_stacking else 'No-stacking'
+    title_high_prop = 'FWHM'
     if is_draw_all:
         is_containing_stack = np.ones(len(stack_dict[(0,1)]['bool']),dtype=bool) # draw everything
     else:
         is_containing_stack = np.zeros(len(stack_dict[(0,1)]['bool']),dtype=int)
-        for arm_idx in ns_struc['linked_PA']:
+        for arm_idx in ns_struc['PA']: # not 'linked_PA': no longer assume linked
             is_containing_stack += np.array(stack_dict[arm_idx]['bool'],dtype=int)
         is_containing_stack = (is_containing_stack==number_stack)
-    if len(is_containing_stack) != len(l2_arr):
+    if len(is_containing_stack) != len(l2_arr): # if stack_dict comes from pj_protocol, its length is [5:-5] instead of [:]
         # l2_arr = l2_arr[5:-5]
         # l3_arr = l3_arr[5:-5]
         is_containing_stack = np.append(is_containing_stack,[is_containing_stack[-1],is_containing_stack[-1],is_containing_stack[-1],is_containing_stack[-1],is_containing_stack[-1]])
@@ -231,12 +243,14 @@ def draw_k2_heatmap(is_high_prop_stacking, is_draw_all, l2_arr, l3_arr, stack_di
         l2_arr = l2_arr[~is_containing_stack]
         l3_arr = l3_arr[~is_containing_stack]        
         title_not_reverse = 'NOT'
+    if sum(is_containing_stack) < 10:
+        return False
     import scipy.stats as stat
     xmin = 1
     xmax = 3
     ymin = 1
     ymax = 2
-    X, Y = np.mgrid[xmin:xmax:1000j, ymin:ymax:1000j]
+    X, Y = np.mgrid[xmin:xmax:3000j, ymin:ymax:3000j]
     positions = np.vstack([X.ravel(), Y.ravel()])
     values = np.vstack([l2_arr, l3_arr])
     try:
@@ -252,7 +266,7 @@ def draw_k2_heatmap(is_high_prop_stacking, is_draw_all, l2_arr, l3_arr, stack_di
         return False
     Z = np.reshape(kernel(positions).T, X.shape)
     Z = np.rot90(Z)    
-    Z_68 = (generate_Z_layer(Z,0.68).astype(bool))
+    Z_68 = (generate_Z_layer(Z,0.68,is_FWHM=True).astype(bool)) # Z_FWHM
     Z_rings = Z_68
     Z_draw = Z*((~Z_rings).astype(int))    
     import matplotlib.pyplot as plt
@@ -299,6 +313,8 @@ def ns_time_si_plot(data_process_func, results, plot_confs, data, varname):
     # obtain stacking_vtime
     stacking_vtime_dic, nonstacking_vtime_dic = data_process_func(var_ls_results, data, vtime=True)
     path = plotpath.split('/')
+    if not os.path.exists('/'.join(path[:-1])):
+        os.makedirs('/'.join(path[:-1]))
     p = path[3].split('_')
     p[0] = path[2] = 'pj'
     path[3] = '_'.join(p)
@@ -343,10 +359,13 @@ def ns_time_pa_plot(data_process_func, results, plot_confs, data, varname):
         pj_path = '/'.join(path)
         with open(os.path.splitext(pj_path)[0]+'.stack','rb') as f:
             nonstacking_vtime_dic, stacking_vtime_dic = pickle.load(f) # legacy: pj 'nonstacking' --> pa 'stacking'
+    elif varname == 'pj':
+        with open(os.path.splitext(plotpath)[0]+'.stack','rb') as f:
+            nonstacking_vtime_dic, stacking_vtime_dic = pickle.load(f) # legacy: pj 'nonstacking' --> pa 'stacking'
     # reading ends
     for i, ((ia1,ia2), ang_vtime_dic) in enumerate(var_dic.items()):
         # i: loop of arm patches.
-        if len(var_dic) == 6 and (ia1,ia2) in ns_struc['linked_PA']:
+        if (ia1,ia2) in ns_struc['linked_PA']:
             legend_color='#F7AED0'# #E55050
         else:
             legend_color='#4994FF'
@@ -356,16 +375,26 @@ def ns_time_pa_plot(data_process_func, results, plot_confs, data, varname):
         ang_runningavg = [np.sum(ang_ls[j:j+time_window_width])/time_window_width for j in range(len(time_idx))]
         ang_runningstd = [np.std(ang_ls[j:j+time_window_width]) for j in range(len(time_idx))]
         if varname == 'pj':
-            avg_running_is_stacking, avg_running_is_nonstacking = identifying_stacking(ang_runningavg, ang_runningstd, stacking_min_length, stacking_crit_ang, stacking_crit_rmsd, nonstacking_min_length, nonstacking_crit_ang, nonstacking_crit_rmsd)
-            stacking_vtime_dic[(ia1,ia2)] = {'bool':avg_running_is_stacking,'t':time_idx,'val':ang_runningavg}
-            nonstacking_vtime_dic[(ia1,ia2)] = {'bool':avg_running_is_nonstacking,'t':time_idx,'val':ang_runningavg}
+            # avg_running_is_stacking, avg_running_is_nonstacking = identifying_stacking(ang_runningavg, ang_runningstd, stacking_min_length, stacking_crit_ang, stacking_crit_rmsd, nonstacking_min_length, nonstacking_crit_ang, nonstacking_crit_rmsd)
+            # stacking_vtime_dic[(ia1,ia2)] = {'bool':avg_running_is_stacking,'t':time_idx,'val':ang_runningavg}
+            # nonstacking_vtime_dic[(ia1,ia2)] = {'bool':avg_running_is_nonstacking,'t':time_idx,'val':ang_runningavg}
+            avg_running_is_stacking = stacking_vtime_dic[(ia1,ia2)]['bool']
+            avg_running_is_nonstacking = nonstacking_vtime_dic[(ia1,ia2)]['bool']
+            if time_idx != stacking_vtime_dic[(ia1,ia2)]['t']:
+                # coming from 'si'
+                avg_running_is_stacking = stacking_vtime_dic[(ia1,ia2)]['bool'][5:-5]
+                avg_running_is_nonstacking = nonstacking_vtime_dic[(ia1,ia2)]['bool'][5:-5]                                  
+            stacking_vtime_dic[(ia1,ia2)]['val'] = ang_runningavg
+            nonstacking_vtime_dic[(ia1,ia2)]['val'] = ang_runningavg
+            stacking_vtime_dic[(ia1,ia2)]['raw'] = ang_ls[time_window_width//2:-time_window_width//2+1]
+            nonstacking_vtime_dic[(ia1,ia2)]['raw'] = ang_ls[time_window_width//2:-time_window_width//2+1]
         elif varname == 'pa':
             avg_running_is_stacking = stacking_vtime_dic[(ia1,ia2)]['bool']
             avg_running_is_nonstacking = nonstacking_vtime_dic[(ia1,ia2)]['bool']
-            if time_idx == stacking_vtime_dic[(ia1,ia2)]['t']:
+            if time_idx != stacking_vtime_dic[(ia1,ia2)]['t']:
                 # coming from 'si'
-                stacking_vtime_dic[(ia1,ia2)] = stacking_vtime_dic[(ia1,ia2)][5:-5]
-                nonstacking_vtime_dic[(ia1,ia2)] = nonstacking_vtime_dic[(ia1,ia2)][5:-5]                
+                avg_running_is_stacking = stacking_vtime_dic[(ia1,ia2)]['bool'][5:-5]
+                avg_running_is_nonstacking = nonstacking_vtime_dic[(ia1,ia2)]['bool'][5:-5]                                  
             stacking_vtime_dic[(ia1,ia2)]['val'] = ang_runningavg
             nonstacking_vtime_dic[(ia1,ia2)]['val'] = ang_runningavg
             stacking_vtime_dic[(ia1,ia2)]['raw'] = ang_ls[time_window_width//2:-time_window_width//2+1]
@@ -373,12 +402,13 @@ def ns_time_pa_plot(data_process_func, results, plot_confs, data, varname):
         # transiting_vtime_dic[(ia1,ia2)] = list(filter(None,[time_idx[i] if not(a[i] or b[i]) else None for i in range(len(c))]))
         # plot
         c = ['#00FF00' if is_stacking == True else '#000000' for is_stacking in avg_running_is_stacking] # stacking: dirty
-        c = ['#FF0000' if avg_running_is_nonstacking[i] == True else c[i] for i in range(len(c))] # nonstacking
+        # c = ['#FF0000' if avg_running_is_stacking[i] == True else c[i] for i in range(len(c))] # nonstacking
         axs[i,0].scatter(time_idx,ang_runningavg, label = f'Arm{ia1}~Arm{ia2}', s=4, c=c) # ,c=patch_color_list[i]
-        axs[i,0].plot([min(time_idx),min(time_idx)+nonstacking_min_length*100000],[90,90],c='#FF0000', linewidth=1.5)
+        # axs[i,0].plot([min(time_idx),min(time_idx)+nonstacking_min_length*100000],[90,90],c='#FF0000', linewidth=1.5)
         # axs[i,0].plot([min(time_idx),max(time_idx)],[90,90],c='#000000', linewidth=0.5)
-        axs[i,0].plot([min(time_idx),max(time_idx)],[nonstacking_crit_ang,nonstacking_crit_ang],c='#FF0000', linewidth=0.5)
-        axs[i,0].set_xlabel('Time') #, fontsize=18
+        # axs[i,0].plot([min(time_idx),max(time_idx)],[nonstacking_crit_ang,nonstacking_crit_ang],c='#FF0000', linewidth=0.5)
+        # axs[i,0].set_xlabel('Time') #, fontsize=18
+        axs[i,0].set_ylim((0,180))
         axs[i,0].set_ylabel(f'{x_var} (Avg, wid:{time_window_width})') #, fontsize=18
         l = axs[i,0].legend(loc = 'lower right')
         for text in l.get_texts():
@@ -393,13 +423,16 @@ def ns_time_pa_plot(data_process_func, results, plot_confs, data, varname):
     for i, ((ia1,ia2), ang_vtime_dic) in enumerate(var_dic.items()):
         ang_ls = [ang_vtime_dic[t][0] for t in ang_vtime_dic if type(t) == int]
         time_ls = [t for t in ang_vtime_dic if type(t) == int]
-        axs[i,2].scatter(time_ls,ang_ls, label = f'Arm{ia1}~Arm{ia2}', s=4) # ,c=patch_color_list[i]
-        axs[i,2].plot([min(time_ls),max(time_ls)],[90,90],c='#000000')
-        axs[i,2].plot([min(time_ls),max(time_ls)],[180,180],c='#000000')
-        axs[i,2].plot([min(time_ls),max(time_ls)],[130,130],c='#000000')
-        axs[i,2].set_xlabel('Time') #, fontsize=18
+        axs[i,2].scatter(time_ls,ang_ls, label = f'Arm{ia1}~Arm{ia2}', s=4, c= ['#00FF00' if is_stacking == True else '#000000' for is_stacking in stacking_vtime_dic[(ia1,ia2)]['bool']]) # ,c=patch_color_list[i]
+        # axs[i,2].plot([min(time_ls),max(time_ls)],[90,90],c='#000000')
+        # axs[i,2].plot([min(time_ls),max(time_ls)],[180,180],c='#000000')
+        # axs[i,2].plot([min(time_ls),max(time_ls)],[130,130],c='#000000')
+        # axs[i,2].set_xlabel('Time') #, fontsize=18
         axs[i,2].set_ylabel(x_var) #, fontsize=18
-        axs[i,2].legend(loc = 'lower right')
+        axs[i,2].set_ylim((0,180))
+        l = axs[i,2].legend(loc = 'lower right')
+        for text in l.get_texts():
+            text.set_color(legend_color)
     # for i, (idx1, idx2) in enumerate(compare_list):
     #     ang_vtime1 = var_dic[idx1]
     #     ang_vtime2 = var_dic[idx2]
@@ -418,23 +451,23 @@ def ns_time_pa_plot(data_process_func, results, plot_confs, data, varname):
     # plotpath = plotpath.split('.')
     # plotpath[-2] = plotpath[-2]+'_vtime'
     # plotpath = '.'.join(plotpath)
-    total_count = counting_stacking(nonstacking_vtime_dic, 100, True, False, ns_struc) # pj: nonstacking--->stacking
-    stacking_0_count = counting_stacking(nonstacking_vtime_dic, 0, False, False, ns_struc)
-    stacking_not0_count = counting_stacking(nonstacking_vtime_dic, 0, False, True, ns_struc)
-    stacking_1_count = counting_stacking(nonstacking_vtime_dic, 1, False, False, ns_struc)
-    stacking_2_count = counting_stacking(nonstacking_vtime_dic, 2, False, False, ns_struc)
-    stacking_3_count = counting_stacking(nonstacking_vtime_dic, 3, False, False, ns_struc)
+    total_count = counting_stacking(stacking_vtime_dic, 100, True, False, ns_struc) # pj: nonstacking--->stacking
+    stacking_0_count = counting_stacking(stacking_vtime_dic, 0, False, False, ns_struc)
+    stacking_not0_count = counting_stacking(stacking_vtime_dic, 0, False, True, ns_struc)
+    stacking_1_count = counting_stacking(stacking_vtime_dic, 1, False, False, ns_struc)
+    stacking_2_count = counting_stacking(stacking_vtime_dic, 2, False, False, ns_struc)
+    stacking_3_count = counting_stacking(stacking_vtime_dic, 3, False, False, ns_struc)
     plt.suptitle(f'Total:{total_count}, 0_stk:{stacking_0_count}, Not0_stk:{stacking_not0_count}, 1_stk: {stacking_1_count}, 2_stk: {stacking_2_count}, 3_stk: {stacking_3_count}')
     chkdir(os.path.dirname(plotpath))
     plt.savefig(plotpath,dpi=400)
      # plt.show()
     plt.close()
-    with open(os.path.splitext(plotpath)[0]+'.stack','wb') as f:
-        # if varname == 'pj': # definition of stacking in pj is the reverse.varname
-        #     pickle.dump((nonstacking_vtime_dic,stacking_vtime_dic), f)
-        # else:
-        #     pass
-        pickle.dump((stacking_vtime_dic,nonstacking_vtime_dic), f)
+    # with open(os.path.splitext(plotpath)[0]+'.stack','wb') as f:
+    #     # if varname == 'pj': # definition of stacking in pj is the reverse.varname
+    #     #     pickle.dump((nonstacking_vtime_dic,stacking_vtime_dic), f)
+    #     # else:
+    #     #     pass
+    #     pickle.dump((stacking_vtime_dic,nonstacking_vtime_dic), f)
     return True
 
 def identifying_stacking(ang_runningavg, ang_runningstd, stacking_min_length, stacking_crit_ang, stacking_crit_rmsd, nonstacking_min_length, nonstacking_crit_ang, nonstacking_crit_rmsd):
@@ -456,7 +489,7 @@ def counting_stacking(stack_dict, number_stack, is_count_all, is_reverse_select_
         is_containing_stack_arr = np.ones(len(stack_dict[(0,1)]['bool']),dtype=bool) # draw everything
     else:
         is_containing_stack_arr = np.zeros(len(stack_dict[(0,1)]['bool']),dtype=int)
-        for iaidx in ns_struc['linked_PA']:
+        for iaidx in ns_struc['PA']: # not 'linked_PA': no longer assume linked
             is_containing_stack_arr += np.array(stack_dict[iaidx]['bool'],dtype=int)
         is_containing_stack_arr = is_containing_stack_arr == number_stack
     if not is_reverse_select_number_stack:
@@ -535,7 +568,7 @@ def get_params(arm_num):
         nonstacking_min_length = 5 # 
         nonstacking_crit_ang = 105 # 
         nonstacking_crit_rmsd = 15 # 
-        ns_struc = {'#arm':3, 'linked_PA': [(0,1),(0,2),(1,2)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+        ns_struc = {'#arm':3, 'linked_PA': [(0,1),(0,2),(1,2)], 'PA' : [(0,1),(0,2),(1,2)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     elif arm_num == 4:
         time_window_width = 11 # 15
         stacking_min_length = 10 # 
@@ -544,7 +577,7 @@ def get_params(arm_num):
         nonstacking_min_length = 5 # 
         nonstacking_crit_ang = 65 # 
         nonstacking_crit_rmsd = 15 # 
-        ns_struc = {'#arm':4, 'linked_PA': [(0,1),(0,3),(1,2),(2,3)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+        ns_struc = {'#arm':4, 'linked_PA': [(0,1),(0,3),(1,2),(2,3)], 'PA': [(0,1),(0,3),(1,2),(2,3),(0,2),(1,3)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     elif arm_num == 5:
         time_window_width = 11 # 15
         stacking_min_length = 10 # useful when CoM is at the center of PJ.
@@ -553,7 +586,7 @@ def get_params(arm_num):
         nonstacking_min_length = 5 # 
         nonstacking_crit_ang = 65 # 
         nonstacking_crit_rmsd = 15 # 
-        ns_struc = {'#arm':5, 'linked_PA': [(0,1),(0,4),(1,2),(2,3),(3,4)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+        ns_struc = {'#arm':5, 'linked_PA': [(0,1),(0,4),(1,2),(2,3),(3,4)], 'PA' : [(0,1),(0,4),(1,2),(2,3),(3,4),(0,2),(1,3),(2,4),(0,3),(1,4)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     elif arm_num == 6:
         time_window_width = 11 # 15
         stacking_min_length = 10 # useful when CoM is at the center of PJ.
@@ -562,7 +595,7 @@ def get_params(arm_num):
         nonstacking_min_length = 5 # 
         nonstacking_crit_ang = 50 # 
         nonstacking_crit_rmsd = 15 # 
-        ns_struc = {'#arm':6, 'linked_PA': [(0,1),(0,5),(1,2),(2,3),(3,4),(4,5)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
+        ns_struc = {'#arm':6, 'linked_PA': [(0,1),(0,5),(1,2),(2,3),(3,4),(4,5)], 'PA' : [(0,1),(0,5),(1,2),(2,3),(3,4),(4,5),(0,2),(1,3),(2,4),(3,5),(0,3),(1,4),(2,5),(0,4),(1,5)], 'pairing_linked':[((0,1),(2,3)),((0,3),(1,2))], 'pairing_unlinked':[((0,2),(1,3))]}
     else:
         assert 0==1    
     assert time_window_width % 2 == 1 # must be odd

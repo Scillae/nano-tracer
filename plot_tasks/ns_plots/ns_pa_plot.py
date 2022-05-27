@@ -37,10 +37,10 @@ def data_process_func(p_ang_ls_res, data, vtime = False): # should be trimmed.
         return angle_dic
 
 
-def ns_pa_plot(single=True, arms=4, temp=30, conc=0.5, sp_suffix='', conf_suffix='', dims_ls= [20,2,7]):
+def ns_pa_plot(single=True, arms=4, temp=30, conc=0.5, sp_suffix='', conf_suffix='', flag_suffix='', dims_ls= [20,2,7]):
     varname = 'pa'
     dims_adjust(dims_ls, conf_suffix, single, sp_suffix)
-    data = (arms, temp, conc, sp_suffix, conf_suffix, dims_ls)
+    data = (arms, temp, conc, sp_suffix, conf_suffix, flag_suffix, dims_ls)
     results = SL_ns(patch_angle_calc, data, varname)
     results_vtime = SL_ns(patch_angle_calc, data, varname, vtime=True)
     # return (0,0,0)

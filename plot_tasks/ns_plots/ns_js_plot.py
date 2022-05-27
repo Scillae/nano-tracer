@@ -4,17 +4,17 @@ from utils.tools import dims_adjust
 
 
 def data_process_func(js_ls_res, data, vtime = False):
-    # arms, temp, conc, sp_suffix, conf_suffix, dims_ls = data
+    # arms, temp, conc, sp_suffix, conf_suffix, flag_suffix, dims_ls = data
     js_ls = [i[1]*0.8518 for i in js_ls_res]
     if vtime == False:
         return js_ls
     else:
         return js_ls_res
 
-def ns_js_plot(single=True, arms=4, temp=30, conc=0.5, sp_suffix='', conf_suffix='', dims_ls= [20,2,7]):
+def ns_js_plot(single=True, arms=4, temp=30, conc=0.5, sp_suffix='', conf_suffix='', flag_suffix='', dims_ls= [20,2,7]):
     varname = 'js'
     dims_adjust(dims_ls, conf_suffix, single, sp_suffix)
-    data = (arms, temp, conc, sp_suffix, conf_suffix, dims_ls)
+    data = (arms, temp, conc, sp_suffix, conf_suffix, flag_suffix, dims_ls)
     results = SL_ns(jun_shift_calc, data, varname) # results: var_ls_results, label, plotpath
     results_vtime = SL_ns(jun_shift_calc, data, varname, vtime=True)
     #### plot confs ####

@@ -5,13 +5,13 @@ import os.path
 
 
 def special_tasks(axs, data, task_list):
-    jun_list, dims_ls, temp_list, arm_num_list, sp_suffix = data
+    jun_list, dims_ls, temp_list, arm_num_list, sp_suffix, flag_suffix = data
     # 1. a horizontal dashed line at 5/32 for all mean
     for i in range(len(arm_num_list)):
         axs[0,i].plot((-1,11), (5/32,5/32),c='#1AA555',ls=':')
     return axs
 
-def summ_plot_k2_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix=''):
+def summ_plot_k2_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix='', flag_suffix=''):
     '''
     Summary plot (#unpaired at junction varied) of k2.
     k2 ---> 1: anisotropic; ---> 0: isotropic.
@@ -29,7 +29,7 @@ def summ_plot_k2_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task
     plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)
     #### conf ends ####
     # packing
-    data = (jun_list, dims_ls, temp_list, arm_num_list, sp_suffix)
+    data = (jun_list, dims_ls, temp_list, arm_num_list, sp_suffix, flag_suffix)
     plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)
     # load
     jun_summ_dic, savepath = SL_jun(ns_k2_plot, data, conc_list, varname)

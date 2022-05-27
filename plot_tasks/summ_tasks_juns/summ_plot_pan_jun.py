@@ -5,7 +5,7 @@ import os.path
 
 
 def special_tasks(axs, data, task_list):
-    jun_list, dims_ls, temp_list, arm_num_list, sp_suffix = data
+    jun_list, dims_ls, temp_list, arm_num_list, sp_suffix, flag_suffix = data
     # 1. a horizontal dashed line at 109.5° for the 4 arm
     axs[0,0].plot((-1,11), (109.5,109.5),c='#1AA555',ls=':')
     # 2. one at 90° for the 6 arm patch angle plot. 
@@ -16,7 +16,7 @@ def special_tasks(axs, data, task_list):
     return axs
 
 
-def summ_plot_pan_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix=''):
+def summ_plot_pan_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, task_list, color_list, marker_list, sp_suffix='', flag_suffix=''):
     '''
     Summary plot (#unpaired at junction varied) of orthogonal patch angle.
     Set varname and plot confs.
@@ -33,7 +33,7 @@ def summ_plot_pan_jun(jun_list, dims_ls, conc_list, temp_list, arm_num_list, tas
     plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)
     #### conf ends ####
     # packing
-    data = (jun_list, dims_ls, temp_list, arm_num_list, sp_suffix)
+    data = (jun_list, dims_ls, temp_list, arm_num_list, sp_suffix, flag_suffix)
     plot_confs = (xlim, ylim_avg, ylim_std, ylim_skw, y_var)
     # load
     jun_summ_dic, savepath = SL_jun(ns_pan_plot, data, conc_list, varname)

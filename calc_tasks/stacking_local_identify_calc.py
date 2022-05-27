@@ -17,7 +17,7 @@ def stacking_local_identify_calc(path_top, path_traj, arm_num, dims_ls, ns_input
         with open(path_traj,'r') as f:
             f.readline()
             ret=re.match('^b = ([0-9]+) ([0-9]+) ([0-9]+)\n',f.readline())
-        box_dim = np.array((ret.group(1),ret.group(2),ret.group(3)))
+        box_dim = np.array((int(ret.group(1)),int(ret.group(2)),int(ret.group(3))))
         ns_tm = nc.construct(p=ns_input, box_dim=box_dim)
     else:
         ns_tm = nc.construct(obj=ns_input)
@@ -45,8 +45,10 @@ def stacking_local_identify_calc(path_top, path_traj, arm_num, dims_ls, ns_input
             stacking_dict[t_stamp]=(is_stacking, stack_ls)
             continue
         # identify & create jxn_bps
-        jxn_bps = []
-        jxn_bps = [(b0,b1) for b0 in ns.center.values() for b1 in ns.center.values() if check_if_bp(b0,b1) and (b1,b0) not in jxn_bps]
+        jxn_bps = [(b0,b1) for b0 in ns.center.values() for b1 in ns.center.values() if check_if_bp(b0,b1)]
+        for b0, b1 in jxn_bps:
+            if (b1,b0) in jxn_bps:
+                jxn_bps.remove((b1,b0))
         jxn_bps.extend([arm.base_pairs[1] for arm in ns.arms.values()])
         # check if potential stackings are real
         for arm0, arm1 in ptt_aps:
@@ -62,10 +64,10 @@ def stacking_local_identify_calc(path_top, path_traj, arm_num, dims_ls, ns_input
                     continue
                 # check if dist_ax < threshold. dist_ax: dist of CoM_bp from line connecting the two armbps.
                 dist_ax = np.sin(ang0) * np.linalg.norm(CoM_bp(jxn_bp)-CoM_bp(armbp0))
-                if dist_ax < 2: # normal value: ~1.3 SU. 2 is ~150%*1.3
-                    incyl_cnt += 1
-            # check if dist_1bps < typical_dist_stk_bps(0.5) * cnt_bps_incyl * threshold.
-            if np.linalg.norm(CoM_bp(armbp0) - CoM_bp(armbp1)) < 0.5 * incyl_cnt * 1.5:
+                if dist_ax < 1.5 * 1.3: # * np.sin(15*np.pi/180) * 0.5 * incyl_cnt: # normal value: ~1.3 SU. 2 is ~150%*1.3 [* typical_stk_ang_corr_dist(sin(15deg)*incyl_cnt*typical_dist_stk_bps(0.5))] 
+                    incyl_cnt += 1 # TODO! Need to know jxn# & arm#? currently it is a cone!
+            # check if dist_1bps < typical_dist_stk_bps(0.5) * cnt_bps_incyl * threshold(150%) * tolerance(200%, optional).
+            if arc_approx_corr(armbp0,armbp1,np.linalg.norm(CoM_bp(armbp0) - CoM_bp(armbp1))) < 0.5 * (incyl_cnt + 1) * 1.5 * 2: # do we want this arc_approx?
                 # stacking detected!
                 stack_ls.append((None, None, arm0.arm_id,arm1.arm_id)) # stack_ls.append((adj_bp, adj_bp2, arm.arm_id,arm2.arm_id))
         if len(stack_ls) == 0:
@@ -81,13 +83,22 @@ def check_if_bp(b1,b2):
     is_oppos_dir = np.dot(np.array(b1.backbone),np.array(b2.backbone)) < 0
     is_normal_align = np.dot(np.array(b1.normal),np.array(b2.normal)) < 0 # anti-aligned
     disp = (np.array(b1.position)-np.array(b2.position))
+    is_same_plane_b1 = np.abs(np.dot(disp,np.array(b1.normal))) < 0.1
+    is_same_plane_b2 = np.abs(np.dot(disp,np.array(b2.normal))) < 0.1
     if np.linalg.norm(disp) == 0:
         return False
     is_disp_small = np.linalg.norm(disp) < 2 # normal value: ~1.3 SU. 2 is ~150%*1.3
     disp /= np.linalg.norm(disp)
     is_align_disp_b1 = np.abs(np.dot(disp, np.array(b1.backbone))) > 0.5
     is_align_disp_b2 = np.abs(np.dot(disp, np.array(b2.backbone))) > 0.5
-    return is_oppos_dir and is_normal_align and is_disp_small and (is_align_disp_b1 or is_align_disp_b2)
+    return is_oppos_dir and is_normal_align and is_disp_small and (is_align_disp_b1 or is_align_disp_b2) and (is_same_plane_b1 or is_same_plane_b2)
+
+def arc_approx_corr(armbp0,armbp1,norm):
+    ang = obtain_cos(np.array(armbp0[0].normal),np.array(armbp1[0].normal))
+    central_ang = (180-ang)*2
+    r_ang = (ang/2-(180-ang)/2)
+    r = norm/np.sin(central_ang*(np.pi/180)) * np.sin(r_ang*(np.pi/180)) # law of sines
+    return r
 
 def get_arm_dir(arm):
     dir_bp1_bp2 = v_normalize(CoM_bp(arm.base_pairs[2])-CoM_bp(arm.base_pairs[1]))

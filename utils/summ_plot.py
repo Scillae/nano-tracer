@@ -3,7 +3,13 @@ import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
 from collections import OrderedDict
+from joblib import Parallel, delayed
 
+def parallel_ns_func_decorator(ns_func,arm_num,conc,temp,data):
+    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, sp_suffix, flag_suffix = data
+    cond = (arm_num,conc,temp)
+    m1, std, m3_s = ns_func(single=True, arms=arm_num, temp=temp, conc=conc, conf_suffix=conf_suffix, dims_ls=dims_ls, sp_suffix=sp_suffix, flag_suffix=flag_suffix)
+    return cond, (m1, std, m3_s)
 
 def SL(ns_func, data, varname):
     '''
@@ -13,17 +19,22 @@ def SL(ns_func, data, varname):
     :data: in which the descriptions of nanostars (trajectory) are stored.
     :varname: codename of the measurement.
     '''
-    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, sp_suffix = data
-    savepath = f'summary/{arm_num_list}Arms{conf_suffix}/{temp_list}C-{conc_list}M'
+    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, sp_suffix, flag_suffix = data
+    savepath = f'summary/{arm_num_list}Arms{conf_suffix}{flag_suffix}{sp_suffix}/{temp_list}C-{conc_list}M'
     su_path = f'{savepath}-{varname}.sudic' # (p_angs_dic, ns_tm, ns_last, sys)
     su_dic_results = save_load(su_path, None)
     if su_dic_results == False:
         summary_dic = OrderedDict() # {(keys):(mn)}
-        for arm_num in arm_num_list:
-            for conc in conc_list:
-                for temp in temp_list:
-                    m1, std, m3_s = ns_func(single=True, arms=arm_num, temp=temp, conc=conc, conf_suffix=conf_suffix, dims_ls=dims_ls, sp_suffix=sp_suffix)
-                    summary_dic[(arm_num,conc,temp)] = (m1,std,m3_s)
+        # for arm_num in arm_num_list:
+        #     for conc in conc_list:
+        #         for temp in temp_list:
+        #             par_cond_list.append((arm,temp,conc))
+        #             m1, std, m3_s = ns_func(single=True, arms=arm_num, temp=temp, conc=conc, conf_suffix=conf_suffix, dims_ls=dims_ls, sp_suffix=sp_suffix, flag_suffix=flag_suffix)
+        #             summary_dic[(arm_num,conc,temp)] = (m1,std,m3_s)
+        par_cond_list = [(arm_num,conc,temp) for arm_num in arm_num_list for conc in conc_list for temp in temp_list]
+        r_ls = Parallel(n_jobs=12)(delayed(parallel_ns_func_decorator)(ns_func, arm, conc, temp, data) for arm, conc, temp in par_cond_list)
+        for cond, dic in r_ls:
+            summary_dic[cond] = dic
         su_dic_results = save_load(su_path, summary_dic)      
     return su_dic_results, savepath
 
@@ -36,7 +47,7 @@ def SL_jun(ns_func, data, conc_list, varname):
     :data: in which the descriptions of nanostars (trajectory) are stored.
     :varname: codename of the measurement.
     '''
-    jun_list, dims_ls, temp_list, arm_num_list, sp_suffix = data
+    jun_list, dims_ls, temp_list, arm_num_list, sp_suffix, flag_suffix = data
     # plot: conc ~ {x: jun_nums, y: summaries, series: temperature}
     # assume saved, read corr. dics
     jun_summ_dic = OrderedDict() # {jun:{(keys):(mn)}}
@@ -47,7 +58,7 @@ def SL_jun(ns_func, data, conc_list, varname):
         else:
             conf_suffix = f'-jun_{jun}'
             dims_ls[1] = jun
-        savepath = f'summary/{arm_num_list}Arms{conf_suffix}/{temp_list}C-{conc_list}M'
+        savepath = f'summary/{arm_num_list}Arms{conf_suffix}{flag_suffix}{sp_suffix}/{temp_list}C-{conc_list}M'
         su_path = f'{savepath}-{varname}.sudic' # (p_angs_dic, ns_tm, ns_last, sys)
         su_dic_results = save_load(su_path, None)
         if su_dic_results == False:
@@ -55,14 +66,14 @@ def SL_jun(ns_func, data, conc_list, varname):
             for arm_num in arm_num_list:
                 for conc in conc_list:
                     for temp in temp_list:
-                        m1, std, m3_s = ns_func(single=True, arms=arm_num, temp=temp, conc=conc, conf_suffix=conf_suffix, dims_ls=dims_ls)
+                        m1, std, m3_s = ns_func(single=True, arms=arm_num, temp=temp, conc=conc, conf_suffix=conf_suffix, flag_suffix=flag_suffix, dims_ls=dims_ls)
                         summary_dic[(arm_num,conc,temp)] = (m1,std,m3_s)
             su_dic_results = save_load(su_path, summary_dic)      
         jun_summ_dic[jun] = su_dic_results
     savepath = f'summary/{arm_num_list}Arms{jun_list}/{temp_list}C-{conc_list}M'
     return jun_summ_dic, savepath
 
-def summ_plot(summary_dic, plot_confs, data, task_list, color_list, marker_list, special_tasks=None, sp_suffix=''):
+def summ_plot(summary_dic, plot_confs, data, task_list, color_list, marker_list, special_tasks=None, sp_suffix='', flag_suffix=''):
     '''
     Plot the summary of a measurement.
     Plot: len(task_list) * len(arm_num_list), var vs temp, series: conc
@@ -74,7 +85,7 @@ def summ_plot(summary_dic, plot_confs, data, task_list, color_list, marker_list,
     :special_tasks: a function that modifies the plots.
     '''
     xlim, ylim_avg, ylim_std, ylim_skw, y_var = plot_confs # unpack configurations
-    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, sp_suffix = data
+    conf_suffix, dims_ls, conc_list, temp_list, arm_num_list, sp_suffix, flag_suffix = data
     # plot
     fig = plt.figure(figsize=(3*len(arm_num_list),3*len(task_list)))
     gs = fig.add_gridspec(len(task_list), len(arm_num_list), hspace=0.3, wspace=0.1)
@@ -127,7 +138,7 @@ def summ_plot_jun(jun_summ_dic, plot_confs, data, conc, task_list, color_list, m
     :special_tasks: a function that modifies the plots.
     '''
     xlim, ylim_avg, ylim_std, ylim_skw, y_var = plot_confs # unpack configurations
-    jun_list, dims_ls, temp_list, arm_num_list, sp_suffix = data
+    jun_list, dims_ls, temp_list, arm_num_list, sp_suffix, flag_suffix = data
     # a figure
     fig = plt.figure(figsize=(3*len(arm_num_list),3*len(task_list)))
     gs = fig.add_gridspec(len(task_list), len(arm_num_list), hspace=0.3, wspace=0.1) # hspace=0.4, wspace=0.1
